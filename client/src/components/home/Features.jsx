@@ -14,7 +14,7 @@ const Features = () => {
     <Title title='Build your resume' description='Our streamlined process helps you create a professional resume in minutes with intelligent AI-powered tools and features.'/>
 
             <div className="flex flex-col md:flex-row items-center xl:-mt-10">
-                <img className="max-w-2xl w-full xl:-ml-32" src="https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/features/group-image-1.png" alt="" />
+                <img className="max-w-2xl w-full xl:-ml-32 rounded-2xl shadow-xl" src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=800" alt="Resume Builder Features" />
                 <div className="px-4 md:px-0" onMouseEnter={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)}>
                     <div className={"flex items-center justify-center gap-6 max-w-md group cursor-pointer"}>
                         <div className={`p-6 group-hover:bg-violet-100 border border-transparent group-hover:border-violet-300  flex gap-4 rounded-xl transition-colors ${!isHover ? 'border-violet-300 bg-violet-100' : ''}`}>
