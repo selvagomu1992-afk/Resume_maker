@@ -1,8 +1,8 @@
-import { Cashfree } from "cashfree-pg";
+import { Cashfree, CFEnvironment } from "cashfree-pg";
 
 Cashfree.XClientId = process.env.CASHFREE_APPID;
 Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;
-Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
+Cashfree.XEnvironment = CFEnvironment.PRODUCTION;
 
 export const createOrder = async (req, res) => {
     try {
