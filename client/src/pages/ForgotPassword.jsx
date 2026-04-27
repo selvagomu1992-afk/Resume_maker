@@ -68,7 +68,7 @@ const ForgotPassword = () => {
                         <button 
                             type="submit" 
                             disabled={isLoading}
-                            className="mt-6 w-full h-11 rounded-full text-white bg-green-500 hover:opacity-90 transition-opacity disabled:opacity-50"
+                            className="mt-6 w-full h-11 rounded-full text-white bg-indigo-500 hover:opacity-90 transition-opacity disabled:opacity-50"
                         >
                             {isLoading ? "Sending OTP..." : "Send OTP"}
                         </button>
@@ -119,7 +119,7 @@ const ForgotPassword = () => {
                         <button 
                             type="submit" 
                             disabled={isLoading}
-                            className="mt-6 w-full h-11 rounded-full text-white bg-green-500 hover:opacity-90 transition-opacity disabled:opacity-50"
+                            className="mt-6 w-full h-11 rounded-full text-white bg-indigo-500 hover:opacity-90 transition-opacity disabled:opacity-50"
                         >
                             {isLoading ? "Resetting Password..." : "Reset Password"}
                         </button>
@@ -127,14 +127,14 @@ const ForgotPassword = () => {
                         <button 
                             type="button" 
                             onClick={() => setStep(1)}
-                            className="mt-2 text-sm text-gray-500 hover:text-green-500 hover:underline"
+                            className="mt-2 text-sm text-gray-500 hover:text-indigo-500 hover:underline"
                         >
                             Change Email / Resend OTP
                         </button>
                     </form>
                 )}
                 
-                <p className="text-gray-500 text-sm mt-6">Remember your password? <a href="/" className="text-green-500 hover:underline">Log in</a></p>
+                <p className="text-gray-500 text-sm mt-6">Remember your password? <a href="/" className="text-indigo-500 hover:underline">Log in</a></p>
             </div>
         </div>
     );
