@@ -1,9 +1,5 @@
 import { Cashfree, CFEnvironment } from "cashfree-pg";
 
-Cashfree.XClientId = process.env.CASHFREE_APPID;
-Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;
-Cashfree.XEnvironment = CFEnvironment.PRODUCTION;
-
 export const createOrder = async (req, res) => {
     try {
         const { resumeId } = req.body;
@@ -19,13 +15,16 @@ export const createOrder = async (req, res) => {
                 customer_id: req.userId || "user_checkout",
                 customer_phone: "9999999999",
                 customer_name: "Resume User"
-            },
-            order_meta: {
-                return_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/app`
             }
         };
 
-        const response = await Cashfree.PGCreateOrder("2023-08-01", request);
+        const cashfree = new Cashfree(
+            CFEnvironment.PRODUCTION, 
+            process.env.CASHFREE_APPID, 
+            process.env.CASHFREE_SECRET_KEY
+        );
+
+        const response = await cashfree.PGCreateOrder(request);
         
         res.json({ success: true, payment_session_id: response.data.payment_session_id, order_id: response.data.order_id });
     } catch (error) {
