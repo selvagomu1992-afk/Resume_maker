@@ -13,16 +13,34 @@ const PORT = process.env.PORT || 3000;
 // Database connection
 await connectDB()
 
-app.use(express.json())
-app.use(cors())
+const allowedOrigins = [
+    "https://no-01-resume-maker.onrender.com",
+    "https://resume-maker.onrender.com",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+    "http://localhost:5175",
+    "http://127.0.0.1:5175",
+    "http://localhost:5176",
+    "http://127.0.0.1:5176"
+];
 
-app.get('/', (req, res)=> res.send("Server is live..."))
+app.use(express.json())
+app.use(cors(
+    {
+        origin: allowedOrigins,
+        credentials: true
+    }
+))
+
+app.get('/', (req, res) => res.send("Server is live..."))
 app.use('/api/users', userRouter)
 app.use('/api/resumes', resumeRouter)
 app.use('/api/ai', aiRouter)
 app.use('/api/payment', paymentRouter)
 
-app.listen(PORT, ()=>{
+app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
-    
+
 });
