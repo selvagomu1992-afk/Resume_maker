@@ -39,8 +39,9 @@ const Payment = () => {
                     navigate(`/app/builder/${resumeId}`);
                 }
             } catch (error) {
-                console.error(error);
-                toast.error('Payment initialization error');
+                console.error("Payment initialization error:", error);
+                const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+                toast.error('Payment error: ' + errorMessage);
                 navigate(`/app/builder/${resumeId}`);
             } finally {
                 setLoading(false);
