@@ -13,7 +13,9 @@
   "description": "",
   "dependencies": {
     "@imagekit/nodejs": "^7.1.0",
+    "axios": "^1.15.2",
     "bcrypt": "^6.0.0",
+    "cashfree-pg": "^5.1.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",

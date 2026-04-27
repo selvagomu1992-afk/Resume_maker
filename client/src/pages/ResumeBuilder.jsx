@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 //import { dummyResumeData } from '../assets/assets'
 import { ArrowLeftIcon, Briefcase, ChevronLeft, ChevronRight, DownloadIcon, EyeIcon, EyeOffIcon, FileText, FolderIcon, GraduationCap, Share2Icon, Sparkles, User } from 'lucide-react'
 import PersonalInfoForm from '../components/PersonalInfoForm'
@@ -19,6 +19,7 @@ const ResumeBuilder = () => {
 
   const { resumeId } = useParams()
   const { token } = useSelector(state => state.auth)
+  const navigate = useNavigate()
 
   const [resumeData, setResumeData] = useState({
     _id: '',
@@ -90,7 +91,7 @@ const ResumeBuilder = () => {
   }
 
   const downloadResume = () => {
-    window.print();
+    navigate(`/payment/${resumeId}`)
   }
 
 
