@@ -15,6 +15,10 @@ export const createOrder = async (req, res) => {
                 customer_id: req.userId || "user_checkout",
                 customer_phone: "9999999999",
                 customer_name: "Resume User"
+            },
+            order_meta: {
+                return_url: `${req.headers.origin || 'http://localhost:5173'}/app/builder/${resumeId}?order_id={order_id}&payment_status={order_status}`,
+                notify_url: `https://resume-maker-backend.onrender.com/api/payment/order/webhook`
             }
         };
 

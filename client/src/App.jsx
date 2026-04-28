@@ -50,8 +50,8 @@ const App = () => {
           <Route path='builder/:resumeId' element={<ResumeBuilder />}/>
         </Route>
 
-        <Route path='view/:resumeId' element={<Preview />}/>
-        <Route path='payment/:resumeId' element={<Payment />}/>
+        <Route path='/view/:resumeId' element={<Preview />}/>
+        <Route path='/payment/:resumeId' element={<Payment />}/>
         <Route path='forgot-password' element={<ForgotPassword />} />
 
       </Routes>
