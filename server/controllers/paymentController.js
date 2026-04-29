@@ -1,6 +1,9 @@
 import { Cashfree, CFEnvironment } from "cashfree-pg";
 
 export const createOrder = async (req, res) => {
+    // Debug: confirm env vars are loaded on the server
+    console.log("CASHFREE_APPID:", process.env.CASHFREE_APPID ? `SET (${process.env.CASHFREE_APPID.slice(0,6)}...)` : "❌ UNDEFINED");
+    console.log("CASHFREE_SECRET_KEY:", process.env.CASHFREE_SECRET_KEY ? "SET" : "❌ UNDEFINED");
     try {
         const { resumeId } = req.body;
         
