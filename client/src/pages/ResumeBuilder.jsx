@@ -84,9 +84,9 @@ const ResumeBuilder = () => {
             { headers: { Authorization: token } }
           )
           if (data.isPaid) {
+            // Immediately flip isPaid in state → button swaps to "Download PDF" instantly
+            setResumeData(prev => ({ ...prev, isPaid: true }))
             toast.success('Payment successful! Your resume is ready to download.')
-            // Reload resume so isPaid=true is reflected in state, then auto-print
-            await loadExistingResume()
             setTimeout(() => {
               window.print()
             }, 800)
