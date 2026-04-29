@@ -45,6 +45,10 @@ const ResumeBuilder = () => {
       if (data.resume) {
         setResumeData(data.resume)
         document.title = data.resume.title;
+        // If already paid (returning user), auto-download immediately
+        if (data.resume.isPaid) {
+          setTimeout(() => window.print(), 800)
+        }
       }
     } catch (error) {
       console.log(error.message)
@@ -235,10 +239,12 @@ const ResumeBuilder = () => {
                   {resumeData.public ? <EyeIcon className="size-4" /> : <EyeOffIcon className="size-4" />}
                   {resumeData.public ? 'Public' : 'Private'}
                 </button>
-                <button onClick={downloadResume} className='flex items-center gap-2 px-6 py-2 text-xs bg-gradient-to-br from-indigo-100 to-indigo-200 text-indigo-600 rounded-lg ring-indigo-300 hover:ring transition-colors'>
-                  <DownloadIcon className='size-4' />
-                  {resumeData.isPaid ? 'Download PDF' : 'Download ₹49'}
-                </button>
+                {/* Show download button only if NOT yet paid */}
+                {!resumeData.isPaid && (
+                  <button onClick={downloadResume} className='flex items-center gap-2 px-6 py-2 text-xs bg-gradient-to-br from-indigo-100 to-indigo-200 text-indigo-600 rounded-lg ring-indigo-300 hover:ring transition-colors'>
+                    <DownloadIcon className='size-4' /> Download ₹49
+                  </button>
+                )}
               </div>
             </div>
 
