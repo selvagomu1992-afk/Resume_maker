@@ -232,31 +232,20 @@ const ResumeBuilder = () => {
                   {resumeData.public ? <EyeIcon className="size-4" /> : <EyeOffIcon className="size-4" />}
                   {resumeData.public ? 'Public' : 'Private'}
                 </button>
-                {/* PAY BUTTON — only when not yet paid */}
-                {!resumeData.isPaid && (
-                  <button
-                    onClick={goToPayment}
-                    className='flex items-center gap-2 px-5 py-2 text-xs rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm hover:from-indigo-600 hover:to-indigo-700 transition-all'
-                  >
-                    <span className='text-base leading-none'>₹</span> Pay ₹49
-                  </button>
-                )}
-
-                {/* PAID BADGE — replaces pay button after payment */}
-                {resumeData.isPaid && (
-                  <span className='flex items-center gap-1.5 px-4 py-2 text-xs rounded-lg bg-green-100 text-green-700 ring-1 ring-green-300 font-medium'>
-                    <svg className='size-3.5' fill='currentColor' viewBox='0 0 20 20'><path fillRule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clipRule='evenodd'/></svg>
-                    Paid
-                  </span>
-                )}
-
-                {/* DOWNLOAD BUTTON — only after payment */}
-                {resumeData.isPaid && (
+                {/* SINGLE BUTTON: "Pay ₹49" before payment → "Download PDF" after payment */}
+                {resumeData.isPaid ? (
                   <button
                     onClick={downloadResume}
                     className='flex items-center gap-2 px-5 py-2 text-xs rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white shadow-sm hover:from-green-600 hover:to-green-700 transition-all'
                   >
                     <DownloadIcon className='size-4' /> Download PDF
+                  </button>
+                ) : (
+                  <button
+                    onClick={goToPayment}
+                    className='flex items-center gap-2 px-5 py-2 text-xs rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm hover:from-indigo-600 hover:to-indigo-700 transition-all'
+                  >
+                    <span className='text-base leading-none'>₹</span> Pay ₹49
                   </button>
                 )}
               </div>
