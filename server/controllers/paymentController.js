@@ -17,7 +17,7 @@ export const createOrder = async (req, res) => {
         const orderId = `order_${Date.now()}_${resumeId || Math.floor(Math.random() * 1000)}`;
 
         const request = {
-            order_amount: 49,
+            order_amount: 1.00,
             order_currency: "INR",
             order_id: orderId,
             customer_details: {

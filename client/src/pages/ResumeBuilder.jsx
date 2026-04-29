@@ -45,10 +45,6 @@ const ResumeBuilder = () => {
       if (data.resume) {
         setResumeData(data.resume)
         document.title = data.resume.title;
-        // If already paid (returning user), auto-download immediately
-        if (data.resume.isPaid) {
-          setTimeout(() => window.print(), 800)
-        }
       }
     } catch (error) {
       console.log(error.message)
@@ -88,14 +84,20 @@ const ResumeBuilder = () => {
             { headers: { Authorization: token } }
           )
           if (data.isPaid) {
-            setResumeData(prev => ({ ...prev, isPaid: true }))
-            toast.success('Payment successful! Preparing your download...')
-            setTimeout(() => window.print(), 1000)
+            toast.success('Payment successful! Opening download...')
+            // Print then go to dashboard — no reason to stay on builder
+            setTimeout(() => {
+              window.print()
+              // After print dialog closes, navigate to dashboard
+              navigate('/app')
+            }, 800)
           } else {
             toast.error('Payment verification failed. Status: ' + (data.status || 'unknown'))
+            navigate('/app')
           }
         } catch (err) {
           toast.error('Could not verify payment: ' + err.message)
+          navigate('/app')
         }
       }
       verify()
