@@ -1,9 +1,4 @@
-import { Cashfree } from "cashfree-pg";
-
-// Configure Cashfree with static properties (required for cashfree-pg v5.x)
-Cashfree.XClientId = process.env.CASHFREE_APPID;
-Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;
-Cashfree.XEnvironment = Cashfree.PRODUCTION;
+import { Cashfree, CFEnvironment } from "cashfree-pg";
 
 export const createOrder = async (req, res) => {
     try {
@@ -27,12 +22,23 @@ export const createOrder = async (req, res) => {
             }
         };
 
-        // Use static method call (v5.x API)
-        const response = await Cashfree.PGCreateOrder(request);
+        // PGCreateOrder is an instance method in cashfree-pg v5.x
+        const cashfree = new Cashfree(
+            CFEnvironment.PRODUCTION,
+            process.env.CASHFREE_APPID,
+            process.env.CASHFREE_SECRET_KEY
+        );
+
+        const response = await cashfree.PGCreateOrder(request);
         
-        res.json({ success: true, payment_session_id: response.data.payment_session_id, order_id: response.data.order_id });
+        res.json({ 
+            success: true, 
+            payment_session_id: response.data.payment_session_id, 
+            order_id: response.data.order_id 
+        });
     } catch (error) {
         console.error("Cashfree Error:", error.response ? error.response.data : error.message);
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: error.response?.data?.message || error.message });
     }
 }
+
