@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import React, { useEffect, useState, useRef } from 'react'
+import { Link, useParams, useNavigate, useSearchParams }  from 'react-router-dom'
 //import { dummyResumeData } from '../assets/assets'
 import { ArrowLeftIcon, Briefcase, ChevronLeft, ChevronRight, DownloadIcon, EyeIcon, EyeOffIcon, FileText, FolderIcon, GraduationCap, Share2Icon, Sparkles, User } from 'lucide-react'
 import PersonalInfoForm from '../components/PersonalInfoForm'
@@ -21,6 +21,9 @@ const ResumeBuilder = () => {
   const { token } = useSelector(state => state.auth)
   const navigate = useNavigate()
 
+  const [searchParams] = useSearchParams()
+  const paymentVerified = useRef(false)
+
   const [resumeData, setResumeData] = useState({
     _id: '',
     title: '',
@@ -33,6 +36,7 @@ const ResumeBuilder = () => {
     template: "classic",
     accent_color: "#3B82F6",
     public: false,
+    isPaid: false,
   })
 
   const loadExistingResume = async () => {
@@ -65,6 +69,35 @@ const ResumeBuilder = () => {
     loadExistingResume()
   }, [])
 
+  // After Cashfree redirects back, verify payment server-side then auto-print
+  useEffect(() => {
+    const orderId = searchParams.get('order_id')
+    const paymentStatus = searchParams.get('payment_status')
+
+    if (orderId && paymentStatus === 'PAID' && !paymentVerified.current) {
+      paymentVerified.current = true
+
+      const verify = async () => {
+        try {
+          const { data } = await api.post('/api/payment/verify',
+            { orderId, resumeId },
+            { headers: { Authorization: token } }
+          )
+          if (data.isPaid) {
+            setResumeData(prev => ({ ...prev, isPaid: true }))
+            toast.success('Payment successful! Preparing your download...')
+            setTimeout(() => window.print(), 1000)
+          } else {
+            toast.error('Payment verification failed. Status: ' + (data.status || 'unknown'))
+          }
+        } catch (err) {
+          toast.error('Could not verify payment: ' + err.message)
+        }
+      }
+      verify()
+    }
+  }, [searchParams, resumeId, token])
+
   const changeResumeVisibility = async () => {
     try {
       const formData = new FormData()
@@ -91,7 +124,11 @@ const ResumeBuilder = () => {
   }
 
   const downloadResume = () => {
-    navigate(`/payment/${resumeId}`)
+    if (resumeData.isPaid) {
+      window.print()
+    } else {
+      navigate(`/payment/${resumeId}`)
+    }
   }
 
 
@@ -199,7 +236,8 @@ const ResumeBuilder = () => {
                   {resumeData.public ? 'Public' : 'Private'}
                 </button>
                 <button onClick={downloadResume} className='flex items-center gap-2 px-6 py-2 text-xs bg-gradient-to-br from-indigo-100 to-indigo-200 text-indigo-600 rounded-lg ring-indigo-300 hover:ring transition-colors'>
-                  <DownloadIcon className='size-4' /> Download Rs.49
+                  <DownloadIcon className='size-4' />
+                  {resumeData.isPaid ? 'Download PDF' : 'Download ₹49'}
                 </button>
               </div>
             </div>
