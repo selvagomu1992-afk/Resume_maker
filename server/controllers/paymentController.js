@@ -10,14 +10,14 @@ const getCashfree = () => new Cashfree(
 
 // POST /api/payment/create-order
 export const createOrder = async (req, res) => {
-    console.log("CASHFREE_APPID:", process.env.CASHFREE_APPID ? `SET (${process.env.CASHFREE_APPID.slice(0,6)}...)` : "❌ UNDEFINED");
+    console.log("CASHFREE_APPID:", process.env.CASHFREE_APPID ? `SET (${process.env.CASHFREE_APPID.slice(0, 6)}...)` : "❌ UNDEFINED");
     console.log("CASHFREE_SECRET_KEY:", process.env.CASHFREE_SECRET_KEY ? "SET" : "❌ UNDEFINED");
     try {
         const { resumeId } = req.body;
-        const orderId = `order_${Date.now()}_${resumeId || Math.floor(Math.random()*1000)}`;
+        const orderId = `order_${Date.now()}_${resumeId || Math.floor(Math.random() * 1000)}`;
 
         const request = {
-            order_amount: 49.00,
+            order_amount: 1,
             order_currency: "INR",
             order_id: orderId,
             customer_details: {
