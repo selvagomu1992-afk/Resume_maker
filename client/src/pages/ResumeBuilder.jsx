@@ -84,20 +84,17 @@ const ResumeBuilder = () => {
             { headers: { Authorization: token } }
           )
           if (data.isPaid) {
-            toast.success('Payment successful! Opening download...')
-            // Print then go to dashboard — no reason to stay on builder
+            toast.success('Payment successful! Your resume is ready to download.')
+            // Reload resume so isPaid=true is reflected in state, then auto-print
+            await loadExistingResume()
             setTimeout(() => {
               window.print()
-              // After print dialog closes, navigate to dashboard
-              navigate('/app')
             }, 800)
           } else {
             toast.error('Payment verification failed. Status: ' + (data.status || 'unknown'))
-            navigate('/app')
           }
         } catch (err) {
           toast.error('Could not verify payment: ' + err.message)
-          navigate('/app')
         }
       }
       verify()
@@ -136,6 +133,10 @@ const ResumeBuilder = () => {
       navigate(`/payment/${resumeId}`)
     }
   }
+
+  const downloadButtonLabel = resumeData.isPaid
+    ? 'Download PDF'
+    : 'Download ₹49'
 
 
   const saveResume = async () => {
@@ -241,12 +242,17 @@ const ResumeBuilder = () => {
                   {resumeData.public ? <EyeIcon className="size-4" /> : <EyeOffIcon className="size-4" />}
                   {resumeData.public ? 'Public' : 'Private'}
                 </button>
-                {/* Show download button only if NOT yet paid */}
-                {!resumeData.isPaid && (
-                  <button onClick={downloadResume} className='flex items-center gap-2 px-6 py-2 text-xs bg-gradient-to-br from-indigo-100 to-indigo-200 text-indigo-600 rounded-lg ring-indigo-300 hover:ring transition-colors'>
-                    <DownloadIcon className='size-4' /> Download ₹49
-                  </button>
-                )}
+                {/* Download button — shows payment prompt if not paid, direct download if paid */}
+                <button
+                  onClick={downloadResume}
+                  className={`flex items-center gap-2 px-6 py-2 text-xs rounded-lg ring transition-colors bg-gradient-to-br ${
+                    resumeData.isPaid
+                      ? 'from-green-100 to-green-200 text-green-700 ring-green-300 hover:ring-green-400'
+                      : 'from-indigo-100 to-indigo-200 text-indigo-600 ring-indigo-300 hover:ring-indigo-400'
+                  }`}
+                >
+                  <DownloadIcon className='size-4' /> {downloadButtonLabel}
+                </button>
               </div>
             </div>
 
