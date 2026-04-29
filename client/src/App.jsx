@@ -56,7 +56,7 @@ const App = () => {
 
       </Routes>
     </>
-  )v
+  )
 }
 
 export default App
