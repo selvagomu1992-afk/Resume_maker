@@ -42,6 +42,15 @@ app.use('/api/ai', aiRouter)
 app.use('/api/payment', paymentRouter)
 app.use('/api/admin', adminRouter)
 
+// DEV: Manual force-pay endpoint — POST /api/dev/force-pay { resumeId }
+import Resume from './models/Resume.js'
+app.post('/api/dev/force-pay', async (req, res) => {
+    const { resumeId } = req.body
+    if (!resumeId) return res.status(400).json({ message: 'resumeId required' })
+    const updated = await Resume.findByIdAndUpdate(resumeId, { isPaid: true }, { new: true })
+    res.json({ success: true, isPaid: updated?.isPaid, resumeId })
+})
+
 // Serve frontend build in production
 const frontendBuildPath = path.join(__dirname, '../client/dist')
 app.use(express.static(frontendBuildPath))
