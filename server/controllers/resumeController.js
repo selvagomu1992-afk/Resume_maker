@@ -111,6 +111,10 @@ export const updateResume = async (req, res) =>{
             resumeDataCopy.personal_info.image = response.url
         }
 
+       // Never allow client to overwrite payment fields
+       delete resumeDataCopy.isPaid;
+       delete resumeDataCopy.paidOrderId;
+
        const resume = await Resume.findOneAndUpdate({userId, _id: resumeId}, resumeDataCopy, {new: true})
 
        return res.status(200).json({message: 'Saved successfully', resume})
