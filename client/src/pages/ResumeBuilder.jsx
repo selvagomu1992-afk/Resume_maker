@@ -76,7 +76,8 @@ const ResumeBuilder = () => {
     // Wait until auth is resolved before running init
     if (authLoading) return
 
-    const orderId = searchParams.get('order_id')    const paymentStatus = searchParams.get('payment_status')
+    const orderId = searchParams.get('order_id')
+    const paymentStatus = searchParams.get('payment_status')
 
     const init = async () => {
       // Always load resume first
