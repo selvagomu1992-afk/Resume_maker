@@ -8,6 +8,8 @@ import Preview from './pages/Preview'
 import Login from './pages/Login'
 import ForgotPassword from './pages/ForgotPassword'
 import Payment from './pages/Payment'
+import AdminLogin from './pages/AdminLogin'
+import AdminDashboard from './pages/AdminDashboard'
 import { useDispatch } from 'react-redux'
 import api from './configs/api'
 import { login, setLoading } from './app/features/authSlice'
@@ -53,6 +55,8 @@ const App = () => {
         <Route path='/view/:resumeId' element={<Preview />} />
         <Route path='/payment/:resumeId' element={<Payment />} />
         <Route path='forgot-password' element={<ForgotPassword />} />
+        <Route path='/admin' element={<AdminLogin />} />
+        <Route path='/admin/dashboard' element={<AdminDashboard />} />
 
       </Routes>
     </>
