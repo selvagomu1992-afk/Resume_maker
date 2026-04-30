@@ -57,15 +57,24 @@ export const verifyPayment = async (req, res) => {
             return res.status(400).json({ success: false, message: "Missing orderId or resumeId" });
         }
 
+        // First check if already paid in DB — handles duplicate verify calls
+        const existing = await Resume.findById(resumeId);
+        if (existing?.isPaid) {
+            console.log('Already paid in DB | resumeId:', resumeId)
+            return res.json({ success: true, isPaid: true });
+        }
+
         // Fetch the order status directly from Cashfree (cannot be faked by client)
         const cashfree = getCashfree();
         const response = await cashfree.PGFetchOrder(orderId);
         const order = response.data;
 
-        console.log("Cashfree order status:", order.order_status);
+        console.log("Cashfree full order response:", JSON.stringify(order));
 
-        if (order.order_status === "PAID") {
-            // Mark the resume as paid in the database
+        // Cashfree may return PAID or SUCCESS
+        const isPaidStatus = ['PAID', 'SUCCESS'].includes(order.order_status?.toUpperCase())
+
+        if (isPaidStatus) {
             const updated = await Resume.findByIdAndUpdate(
                 resumeId,
                 { isPaid: true, paidOrderId: orderId },
@@ -74,10 +83,11 @@ export const verifyPayment = async (req, res) => {
             console.log('DB updated | resumeId:', resumeId, '| isPaid:', updated?.isPaid)
             return res.json({ success: true, isPaid: true });
         } else {
+            console.log('Order not paid | status:', order.order_status)
             return res.json({ success: false, isPaid: false, status: order.order_status });
         }
     } catch (error) {
-        console.error("Verify Payment Error:", error.response ? error.response.data : error.message);
+        console.error("Verify Payment Error:", error.response ? JSON.stringify(error.response.data) : error.message);
         res.status(500).json({ success: false, message: error.response?.data?.message || error.message });
     }
 }

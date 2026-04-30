@@ -13,22 +13,34 @@ paymentRouter.post('/order/webhook', async (req, res) => {
         const event = req.body;
 
         // Cashfree sends order.paid event when payment is successful
-        if (event?.data?.order?.order_status === 'PAID') {
-            const orderId = event.data.order.order_id;
-            const resumeId = orderId?.split('_')[2]; // our orderId format: order_<timestamp>_<resumeId>
+        const orderStatus = event?.data?.order?.order_status;
+        const orderId = event?.data?.order?.order_id;
 
-            if (resumeId) {
-                await Resume.findByIdAndUpdate(resumeId, {
-                    isPaid: true,
-                    paidOrderId: orderId
-                });
-                console.log('Webhook: DB updated | resumeId:', resumeId, '| isPaid: true');
+        console.log('Webhook orderStatus:', orderStatus, '| orderId:', orderId);
+
+        if (orderStatus === 'PAID' && orderId) {
+            // orderId format: order_<timestamp>_<resumeId>
+            // Use slice(2).join to safely get resumeId even if it had underscores
+            const parts = orderId.split('_');
+            const resumeId = parts.slice(2).join('_');
+
+            console.log('Webhook parsed resumeId:', resumeId);
+
+            if (resumeId && resumeId.length === 24) {
+                const updated = await Resume.findByIdAndUpdate(
+                    resumeId,
+                    { isPaid: true, paidOrderId: orderId },
+                    { new: true }
+                );
+                console.log('Webhook DB updated | resumeId:', resumeId, '| isPaid:', updated?.isPaid);
+            } else {
+                console.log('Webhook: invalid resumeId:', resumeId);
             }
         }
         res.json({ received: true });
     } catch (err) {
         console.error('Webhook error:', err.message);
-        res.json({ received: true }); // always 200 to Cashfree
+        res.json({ received: true });
     }
 });
 
