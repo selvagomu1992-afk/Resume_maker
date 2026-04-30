@@ -7,6 +7,11 @@ import resumeRouter from "./routes/resumeRoutes.js";
 import aiRouter from "./routes/aiRoutes.js";
 import paymentRouter from "./routes/paymentRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,20 +33,24 @@ const allowedOrigins = [
 ];
 
 app.use(express.json())
-app.use(cors(
-    {
-        origin: allowedOrigins,
-        credentials: true
-    }
-))
+app.use(cors({ origin: allowedOrigins, credentials: true }))
 
-app.get('/', (req, res) => res.send("Server is live..."))
+// API routes
 app.use('/api/users', userRouter)
 app.use('/api/resumes', resumeRouter)
 app.use('/api/ai', aiRouter)
 app.use('/api/payment', paymentRouter)
 app.use('/api/admin', adminRouter)
+
+// Serve frontend build in production
+const frontendBuildPath = path.join(__dirname, '../client/dist')
+app.use(express.static(frontendBuildPath))
+
+// All non-API routes → serve React app
+app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendBuildPath, 'index.html'))
+})
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
-
 });
