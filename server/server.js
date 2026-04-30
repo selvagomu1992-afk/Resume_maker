@@ -41,10 +41,6 @@ app.use('/api/resumes', resumeRouter)
 app.use('/api/ai', aiRouter)
 app.use('/api/payment', paymentRouter)
 app.use('/api/admin', adminRouter)
-app.use('/api/payment/order/webhook', (req, res) => {
-    console.log('Cashfree Webhook Received:', req.body);
-    res.json({ received: true });
-});
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 

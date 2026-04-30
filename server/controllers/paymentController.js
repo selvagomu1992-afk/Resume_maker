@@ -27,7 +27,7 @@ export const createOrder = async (req, res) => {
             },
             order_meta: {
                 return_url: `${process.env.FRONTEND_URL || req.headers.origin || 'http://localhost:5173'}/app/builder/${resumeId}?order_id={order_id}&payment_status={order_status}`,
-                notify_url: `https://no-01-resume-maker.onrender.com/api/payment/order/webhook`
+                notify_url: `${process.env.BACKEND_URL || 'https://resume-maker-backend.onrender.com'}/api/payment/order/webhook`
             }
         };
 
