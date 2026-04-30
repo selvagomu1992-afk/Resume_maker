@@ -246,21 +246,24 @@ const ResumeBuilder = () => {
                 </button>
                 {/* Show nothing until page is ready to avoid flash of wrong button */}
                 {pageReady && (
-                  isPaid ? (
-                    <button
-                      onClick={downloadResume}
-                      className='flex items-center gap-2 px-5 py-2 text-xs rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white shadow-sm hover:from-green-600 hover:to-green-700 transition-all'
-                    >
-                      <DownloadIcon className='size-4' /> Download PDF
-                    </button>
-                  ) : (
-                    <button
-                      onClick={goToPayment}
-                      className='flex items-center gap-2 px-5 py-2 text-xs rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm hover:from-indigo-600 hover:to-indigo-700 transition-all'
-                    >
-                      <span className='text-base leading-none'>₹</span> Pay ₹49
-                    </button>
-                  )
+                  <>
+                    {isPaid && (
+                      <button
+                        onClick={downloadResume}
+                        className='flex items-center gap-2 px-5 py-2 text-xs rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white shadow-sm hover:from-green-600 hover:to-green-700 transition-all'
+                      >
+                        <DownloadIcon className='size-4' /> Download PDF
+                      </button>
+                    )}
+                    {!isPaid && (
+                      <button
+                        onClick={goToPayment}
+                        className='flex items-center gap-2 px-5 py-2 text-xs rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm hover:from-indigo-600 hover:to-indigo-700 transition-all'
+                      >
+                        <span className='text-base leading-none'>₹</span> Pay ₹49
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </div>
