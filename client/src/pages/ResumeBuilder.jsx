@@ -24,6 +24,9 @@ const ResumeBuilder = () => {
   const [searchParams] = useSearchParams()
   const paymentVerified = useRef(false)
 
+  const [isPaid, setIsPaid] = useState(false)
+  const [pageReady, setPageReady] = useState(false)
+
   const [resumeData, setResumeData] = useState({
     _id: '',
     title: '',
@@ -44,6 +47,7 @@ const ResumeBuilder = () => {
       const { data } = await api.get('/api/resumes/get/' + resumeId, { headers: { Authorization: token } })
       if (data.resume) {
         setResumeData(data.resume)
+        setIsPaid(!!data.resume.isPaid)
         document.title = data.resume.title;
         return data.resume
       }
@@ -76,7 +80,11 @@ const ResumeBuilder = () => {
       const resume = await loadExistingResume()
 
       // If already paid in DB, nothing more to do
-      if (resume?.isPaid) return
+      if (resume?.isPaid) {
+        setIsPaid(true)
+        setPageReady(true)
+        return
+      }
 
       // If returning from a Cashfree redirect with PAID status, verify server-side
       if (orderId && paymentStatus === 'PAID' && !paymentVerified.current) {
@@ -88,8 +96,7 @@ const ResumeBuilder = () => {
             { headers: { Authorization: token } }
           )
           if (data.isPaid) {
-            // DB is now updated — flip state so Download button shows immediately
-            setResumeData(prev => ({ ...prev, isPaid: true }))
+            setIsPaid(true)
             toast.success('Payment successful! Click Download PDF to save your resume.')
           } else {
             toast.error('Payment verification failed. Status: ' + (data.status || 'unknown'))
@@ -98,6 +105,8 @@ const ResumeBuilder = () => {
           toast.error('Could not verify payment: ' + err.message)
         }
       }
+
+      setPageReady(true)
     }
 
     init()
@@ -235,21 +244,23 @@ const ResumeBuilder = () => {
                   {resumeData.public ? <EyeIcon className="size-4" /> : <EyeOffIcon className="size-4" />}
                   {resumeData.public ? 'Public' : 'Private'}
                 </button>
-                {/* SINGLE BUTTON: "Pay ₹49" before payment → "Download PDF" after payment */}
-                {resumeData.isPaid ? (
-                  <button
-                    onClick={downloadResume}
-                    className='flex items-center gap-2 px-5 py-2 text-xs rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white shadow-sm hover:from-green-600 hover:to-green-700 transition-all'
-                  >
-                    <DownloadIcon className='size-4' /> Download PDF
-                  </button>
-                ) : (
-                  <button
-                    onClick={goToPayment}
-                    className='flex items-center gap-2 px-5 py-2 text-xs rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm hover:from-indigo-600 hover:to-indigo-700 transition-all'
-                  >
-                    <span className='text-base leading-none'>₹</span> Pay ₹49
-                  </button>
+                {/* Show nothing until page is ready to avoid flash of wrong button */}
+                {pageReady && (
+                  isPaid ? (
+                    <button
+                      onClick={downloadResume}
+                      className='flex items-center gap-2 px-5 py-2 text-xs rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white shadow-sm hover:from-green-600 hover:to-green-700 transition-all'
+                    >
+                      <DownloadIcon className='size-4' /> Download PDF
+                    </button>
+                  ) : (
+                    <button
+                      onClick={goToPayment}
+                      className='flex items-center gap-2 px-5 py-2 text-xs rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm hover:from-indigo-600 hover:to-indigo-700 transition-all'
+                    >
+                      <span className='text-base leading-none'>₹</span> Pay ₹49
+                    </button>
+                  )
                 )}
               </div>
             </div>
