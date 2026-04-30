@@ -45,10 +45,12 @@ const ResumeBuilder = () => {
       if (data.resume) {
         setResumeData(data.resume)
         document.title = data.resume.title;
+        return data.resume
       }
     } catch (error) {
       console.log(error.message)
     }
+    return null
   }
 
   const [activeSectionIndex, setActiveSectionIndex] = useState(0)
@@ -66,40 +68,40 @@ const ResumeBuilder = () => {
   const activeSection = sections[activeSectionIndex]
 
   useEffect(() => {
-    loadExistingResume()
-  }, [])
-
-  // After Cashfree redirects back with ?order_id=...&payment_status=PAID
-  // verify server-side → flip isPaid in state → show Download button
-  useEffect(() => {
     const orderId = searchParams.get('order_id')
     const paymentStatus = searchParams.get('payment_status')
 
-    if (!orderId || paymentStatus !== 'PAID' || paymentVerified.current) return
-    paymentVerified.current = true
+    const init = async () => {
+      // Always load resume first
+      const resume = await loadExistingResume()
 
-    const verify = async () => {
-      try {
-        const { data } = await api.post(
-          '/api/payment/verify',
-          { orderId, resumeId },
-          { headers: { Authorization: token } }
-        )
+      // If already paid in DB, nothing more to do
+      if (resume?.isPaid) return
 
-        if (data.isPaid) {
-          // Directly flip isPaid — no need to reload, DB is already updated by verifyPayment
-          setResumeData(prev => ({ ...prev, isPaid: true }))
-          toast.success('Payment successful! Click Download PDF to save your resume.')
-        } else {
-          toast.error('Payment verification failed. Status: ' + (data.status || 'unknown'))
+      // If returning from a Cashfree redirect with PAID status, verify server-side
+      if (orderId && paymentStatus === 'PAID' && !paymentVerified.current) {
+        paymentVerified.current = true
+        try {
+          const { data } = await api.post(
+            '/api/payment/verify',
+            { orderId, resumeId },
+            { headers: { Authorization: token } }
+          )
+          if (data.isPaid) {
+            // DB is now updated — flip state so Download button shows immediately
+            setResumeData(prev => ({ ...prev, isPaid: true }))
+            toast.success('Payment successful! Click Download PDF to save your resume.')
+          } else {
+            toast.error('Payment verification failed. Status: ' + (data.status || 'unknown'))
+          }
+        } catch (err) {
+          toast.error('Could not verify payment: ' + err.message)
         }
-      } catch (err) {
-        toast.error('Could not verify payment: ' + err.message)
       }
     }
 
-    verify()
-  }, [searchParams, resumeId, token])
+    init()
+  }, [])
 
   const changeResumeVisibility = async () => {
     try {
@@ -146,7 +148,8 @@ const ResumeBuilder = () => {
 
       const { data } = await api.put('/api/resumes/update', formData, { headers: { Authorization: token } })
 
-      setResumeData(data.resume)
+      // Preserve isPaid from current state — server protects it but keep client in sync
+      setResumeData(prev => ({ ...data.resume, isPaid: prev.isPaid }))
       toast.success(data.message)
     } catch (error) {
       console.error("Error saving resume:", error)
