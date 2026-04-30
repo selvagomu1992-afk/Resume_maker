@@ -19,6 +19,7 @@ const ResumeBuilder = () => {
 
   const { resumeId } = useParams()
   const { token } = useSelector(state => state.auth)
+  const { loading: authLoading } = useSelector(state => state.auth)
   const navigate = useNavigate()
 
   const [searchParams] = useSearchParams()
@@ -72,6 +73,9 @@ const ResumeBuilder = () => {
   const activeSection = sections[activeSectionIndex]
 
   useEffect(() => {
+    // Wait until auth is resolved before running init
+    if (authLoading) return
+
     const orderId = searchParams.get('order_id')
     const paymentStatus = searchParams.get('payment_status')
 
@@ -89,20 +93,38 @@ const ResumeBuilder = () => {
       // If returning from a Cashfree redirect with PAID status, verify server-side
       if (orderId && paymentStatus === 'PAID' && !paymentVerified.current) {
         paymentVerified.current = true
-        try {
-          const { data } = await api.post(
-            '/api/payment/verify',
-            { orderId, resumeId },
-            { headers: { Authorization: token } }
-          )
-          if (data.isPaid) {
-            setIsPaid(true)
-            toast.success('Payment successful! Click Download PDF to save your resume.')
-          } else {
-            toast.error('Payment verification failed. Status: ' + (data.status || 'unknown'))
+
+        // Retry verify up to 3 times with 1s delay — handles slow DB writes on production
+        let verified = false
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            const { data } = await api.post(
+              '/api/payment/verify',
+              { orderId, resumeId },
+              { headers: { Authorization: token } }
+            )
+            if (data.isPaid) {
+              setIsPaid(true)
+              verified = true
+              toast.success('Payment successful! Click Download PDF to save your resume.')
+              break
+            }
+            // Not paid yet — wait 1s and retry
+            if (attempt < 3) await new Promise(r => setTimeout(r, 1000))
+          } catch (err) {
+            console.error(`Verify attempt ${attempt} failed:`, err.message)
+            if (attempt < 3) await new Promise(r => setTimeout(r, 1000))
           }
-        } catch (err) {
-          toast.error('Could not verify payment: ' + err.message)
+        }
+
+        if (!verified) {
+          // Last resort: reload resume from DB — Cashfree webhook may have already updated it
+          const refreshed = await loadExistingResume()
+          if (refreshed?.isPaid) {
+            setIsPaid(true)
+          } else {
+            toast.error('Payment verification failed. Please contact support if amount was deducted.')
+          }
         }
       }
 
@@ -110,7 +132,7 @@ const ResumeBuilder = () => {
     }
 
     init()
-  }, [])
+  }, [authLoading])
 
   const changeResumeVisibility = async () => {
     try {
