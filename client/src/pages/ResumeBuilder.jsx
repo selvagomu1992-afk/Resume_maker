@@ -19,7 +19,6 @@ const ResumeBuilder = () => {
 
   const { resumeId } = useParams()
   const { token } = useSelector(state => state.auth)
-  const { loading: authLoading } = useSelector(state => state.auth)
   const navigate = useNavigate()
 
   const [searchParams] = useSearchParams()
@@ -73,57 +72,32 @@ const ResumeBuilder = () => {
   const activeSection = sections[activeSectionIndex]
 
   useEffect(() => {
-    // Wait until auth is resolved before running init
-    if (authLoading) return
-
     const orderId = searchParams.get('order_id')
     const paymentStatus = searchParams.get('payment_status')
 
     const init = async () => {
-      // Always load resume first
+      // Load resume from DB first
       const resume = await loadExistingResume()
 
-      // If already paid in DB, nothing more to do
+      // Already paid in DB — show Download button immediately
       if (resume?.isPaid) {
         setIsPaid(true)
         setPageReady(true)
         return
       }
 
-      // If returning from a Cashfree redirect with PAID status, verify server-side
+      // Cashfree redirected back with PAID status — update DB and show Download button
       if (orderId && paymentStatus === 'PAID' && !paymentVerified.current) {
         paymentVerified.current = true
-
-        // Retry verify up to 3 times with 1s delay — handles slow DB writes on production
-        let verified = false
-        for (let attempt = 1; attempt <= 3; attempt++) {
-          try {
-            const { data } = await api.post(
-              '/api/payment/verify',
-              { orderId, resumeId }
-              // No auth header needed — orderId from Cashfree is the proof
-            )
-            if (data.isPaid) {
-              setIsPaid(true)
-              verified = true
-              toast.success('Payment successful! Click Download PDF to save your resume.')
-              break
-            }
-            if (attempt < 3) await new Promise(r => setTimeout(r, 1000))
-          } catch (err) {
-            console.error(`Verify attempt ${attempt} failed:`, err.message)
-            if (attempt < 3) await new Promise(r => setTimeout(r, 1000))
-          }
-        }
-
-        if (!verified) {
-          // Last resort: reload resume from DB — Cashfree webhook may have already updated it
-          const refreshed = await loadExistingResume()
-          if (refreshed?.isPaid) {
+        try {
+          const { data } = await api.post('/api/payment/verify', { orderId, resumeId })
+          if (data.isPaid) {
             setIsPaid(true)
-          } else {
-            toast.error('Payment verification failed. Please contact support if amount was deducted.')
+            toast.success('Payment successful! Click Download PDF to save your resume.')
           }
+        } catch (err) {
+          console.error('Verify failed:', err.message)
+          toast.error('Could not confirm payment. Please refresh the page.')
         }
       }
 
@@ -131,7 +105,7 @@ const ResumeBuilder = () => {
     }
 
     init()
-  }, [authLoading])
+  }, [])
   const changeResumeVisibility = async () => {
     try {
       const formData = new FormData()
