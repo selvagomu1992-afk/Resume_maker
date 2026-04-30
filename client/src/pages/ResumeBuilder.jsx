@@ -131,7 +131,32 @@ const ResumeBuilder = () => {
     }
   }
 
-  const downloadResume = () => window.print()
+  const downloadResume = () => {
+    const resumeEl = document.getElementById('resume-preview')
+    if (!resumeEl) return
+
+    const iframe = document.createElement('iframe')
+    iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:none;'
+    document.body.appendChild(iframe)
+
+    const doc = iframe.contentWindow.document
+    const styles = Array.from(document.styleSheets)
+      .map(sheet => {
+        try { return Array.from(sheet.cssRules).map(r => r.cssText).join('\n') }
+        catch { return '' }
+      }).join('\n')
+
+    doc.open()
+    doc.write(`<!DOCTYPE html><html><head><title>Resume</title>
+      <style>*{margin:0;padding:0;box-sizing:border-box;}body{background:white;}@page{size:A4;margin:0;}</style>
+      <style>${styles}</style>
+      </head><body>${resumeEl.outerHTML}</body></html>`)
+    doc.close()
+
+    iframe.contentWindow.focus()
+    iframe.contentWindow.print()
+    setTimeout(() => document.body.removeChild(iframe), 1000)
+  }
   const goToPayment = () => navigate(`/payment/${resumeId}`)
 
   const saveResume = async () => {
