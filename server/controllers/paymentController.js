@@ -51,6 +51,8 @@ export const verifyPayment = async (req, res) => {
     try {
         const { orderId, resumeId } = req.body;
 
+        console.log('verifyPayment called | orderId:', orderId, '| resumeId:', resumeId)
+
         if (!orderId || !resumeId) {
             return res.status(400).json({ success: false, message: "Missing orderId or resumeId" });
         }
@@ -64,10 +66,12 @@ export const verifyPayment = async (req, res) => {
 
         if (order.order_status === "PAID") {
             // Mark the resume as paid in the database
-            await Resume.findByIdAndUpdate(resumeId, {
-                isPaid: true,
-                paidOrderId: orderId
-            });
+            const updated = await Resume.findByIdAndUpdate(
+                resumeId,
+                { isPaid: true, paidOrderId: orderId },
+                { new: true }
+            );
+            console.log('DB updated | resumeId:', resumeId, '| isPaid:', updated?.isPaid)
             return res.json({ success: true, isPaid: true });
         } else {
             return res.json({ success: false, isPaid: false, status: order.order_status });

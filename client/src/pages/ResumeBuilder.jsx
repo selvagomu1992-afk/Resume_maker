@@ -76,8 +76,7 @@ const ResumeBuilder = () => {
     // Wait until auth is resolved before running init
     if (authLoading) return
 
-    const orderId = searchParams.get('order_id')
-    const paymentStatus = searchParams.get('payment_status')
+    const orderId = searchParams.get('order_id')    const paymentStatus = searchParams.get('payment_status')
 
     const init = async () => {
       // Always load resume first
@@ -100,8 +99,8 @@ const ResumeBuilder = () => {
           try {
             const { data } = await api.post(
               '/api/payment/verify',
-              { orderId, resumeId },
-              { headers: { Authorization: token } }
+              { orderId, resumeId }
+              // No auth header needed — orderId from Cashfree is the proof
             )
             if (data.isPaid) {
               setIsPaid(true)
@@ -109,7 +108,6 @@ const ResumeBuilder = () => {
               toast.success('Payment successful! Click Download PDF to save your resume.')
               break
             }
-            // Not paid yet — wait 1s and retry
             if (attempt < 3) await new Promise(r => setTimeout(r, 1000))
           } catch (err) {
             console.error(`Verify attempt ${attempt} failed:`, err.message)
@@ -133,7 +131,6 @@ const ResumeBuilder = () => {
 
     init()
   }, [authLoading])
-
   const changeResumeVisibility = async () => {
     try {
       const formData = new FormData()
