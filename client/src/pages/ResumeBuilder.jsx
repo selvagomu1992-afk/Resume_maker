@@ -39,11 +39,12 @@ const ResumeBuilder = () => {
     isPaid: false,
   })
 
-  const loadExistingResume = async () => {
+  const loadExistingResume = async (forceIsPaid = false) => {
     try {
       const { data } = await api.get('/api/resumes/get/' + resumeId, { headers: { Authorization: token } })
       if (data.resume) {
-        setResumeData(data.resume)
+        // If payment was just verified, ensure isPaid stays true even if DB hasn't flushed yet
+        setResumeData(forceIsPaid ? { ...data.resume, isPaid: true } : data.resume)
         document.title = data.resume.title;
       }
     } catch (error) {
@@ -66,6 +67,10 @@ const ResumeBuilder = () => {
   const activeSection = sections[activeSectionIndex]
 
   useEffect(() => {
+    // If returning from payment, skip initial load — the verify useEffect will handle it
+    const orderId = searchParams.get('order_id')
+    const paymentStatus = searchParams.get('payment_status')
+    if (orderId && paymentStatus === 'PAID') return
     loadExistingResume()
   }, [])
 
@@ -84,16 +89,18 @@ const ResumeBuilder = () => {
             { headers: { Authorization: token } }
           )
           if (data.isPaid) {
-            // Immediately flip isPaid in state → button swaps to "Download PDF" instantly
-            setResumeData(prev => ({ ...prev, isPaid: true }))
+            // Load full resume and force isPaid:true so Download button shows immediately
+            await loadExistingResume(true)
             toast.success('Payment successful! Your resume is ready to download.')
             setTimeout(() => {
               window.print()
             }, 800)
           } else {
+            await loadExistingResume()
             toast.error('Payment verification failed. Status: ' + (data.status || 'unknown'))
           }
         } catch (err) {
+          await loadExistingResume()
           toast.error('Could not verify payment: ' + err.message)
         }
       }
