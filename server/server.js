@@ -23,6 +23,7 @@ await connectDB();
 const allowedOrigins = [
     "https://no-01-resume-maker.onrender.com",
     "https://resume-maker.onrender.com",
+    "https://resume-maker-gdhj.onrender.com",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:5174",
@@ -61,7 +62,7 @@ const frontendBuildPath = path.join(__dirname, '../client/dist');
 app.use(express.static(frontendBuildPath));
 
 // All non-API routes → serve React app
-app.get('*', (req, res) => {
+app.get(/^(?!\/api).*$/, (req, res) => {
     res.sendFile(path.join(frontendBuildPath, 'index.html'));
 });
 
