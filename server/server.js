@@ -1,8 +1,6 @@
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
-import path from "path";
-import { fileURLToPath } from "url";
 import connectDB from "./configs/db.js";
 import userRouter from "./routes/userRoutes.js";
 import resumeRouter from "./routes/resumeRoutes.js";
@@ -10,9 +8,6 @@ import aiRouter from "./routes/aiRoutes.js";
 import paymentRouter from "./routes/paymentRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
 import Resume from "./models/Resume.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,19 +18,19 @@ await connectDB();
 const allowedOrigins = [
     "https://no-01-resume-maker.onrender.com",
     "https://resume-maker.onrender.com",
-    "https://resume-maker-gdhj.onrender.com",
+    "https://resume-backend-757i.onrender.com",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:5174",
-    "http://127.0.0.1:5174",
     "http://localhost:5175",
-    "http://127.0.0.1:5175",
     "http://localhost:5176",
-    "http://127.0.0.1:5176"
 ];
 
 app.use(express.json());
 app.use(cors({ origin: allowedOrigins, credentials: true }));
+
+// Health check
+app.get('/', (req, res) => res.send("Server is live..."));
 
 // API routes
 app.use('/api/users', userRouter);
@@ -44,7 +39,7 @@ app.use('/api/ai', aiRouter);
 app.use('/api/payment', paymentRouter);
 app.use('/api/admin', adminRouter);
 
-// Force-pay: manually set isPaid=true for a resumeId (for testing)
+// Force-pay: manually set isPaid=true for a resumeId
 // POST /api/dev/force-pay  { resumeId }
 app.post('/api/dev/force-pay', async (req, res) => {
     try {
@@ -55,15 +50,6 @@ app.post('/api/dev/force-pay', async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-});
-
-// Serve frontend build in production
-const frontendBuildPath = path.join(__dirname, '../client/dist');
-app.use(express.static(frontendBuildPath));
-
-// All non-API routes → serve React app
-app.get(/^(?!\/api).*$/, (req, res) => {
-    res.sendFile(path.join(frontendBuildPath, 'index.html'));
 });
 
 app.listen(PORT, () => {
