@@ -16,8 +16,7 @@ const PORT = process.env.PORT || 3000;
 await connectDB();
 
 const allowedOrigins = [
-    "https://no-01-resume-maker.onrender.com",
-    "https://resume-maker.onrender.com",
+    "https://resumemaxx.onrender.com",
     "https://resume-backend-757i.onrender.com",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
