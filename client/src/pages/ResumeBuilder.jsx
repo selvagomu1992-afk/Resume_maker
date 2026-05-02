@@ -13,6 +13,7 @@ import ProjectForm from '../components/ProjectForm'
 import SkillsForm from '../components/SkillsForm'
 import { useSelector } from 'react-redux'
 import { toPng } from 'html-to-image'
+import { jsPDF } from 'jspdf'
 import api from '../configs/api'
 import toast from 'react-hot-toast'
 
@@ -139,47 +140,55 @@ const ResumeBuilder = () => {
 
     const toastId = toast.loading('Generating PDF...')
     try {
-      // Capture resume as PNG using html-to-image (supports oklch/Tailwind v4)
+      // Capture as PNG — html-to-image handles oklch/Tailwind v4 colors correctly
       const dataUrl = await toPng(element, {
         quality: 1,
         pixelRatio: 2,
         backgroundColor: '#ffffff',
       })
 
-      // Convert PNG dataUrl → Blob → PDF using native browser APIs (no jsPDF)
       const img = new Image()
       img.src = dataUrl
       await new Promise(resolve => { img.onload = resolve })
 
-      // A4 dimensions in px at 96dpi
-      const A4_WIDTH_PX = 794
-      const A4_HEIGHT_PX = 1123
+      // A4 size in mm
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      const pageW = pdf.internal.pageSize.getWidth()   // 210mm
+      const pageH = pdf.internal.pageSize.getHeight()  // 297mm
 
-      const canvas = document.createElement('canvas')
-      canvas.width = A4_WIDTH_PX
-      canvas.height = A4_HEIGHT_PX
-      const ctx = canvas.getContext('2d')
-      ctx.fillStyle = '#ffffff'
-      ctx.fillRect(0, 0, A4_WIDTH_PX, A4_HEIGHT_PX)
+      const imgAspect = img.height / img.width
+      const imgH = pageW * imgAspect
 
-      // Scale image to fit A4 width
-      const scale = A4_WIDTH_PX / img.width
-      ctx.drawImage(img, 0, 0, img.width * scale, img.height * scale)
+      if (imgH <= pageH) {
+        // Single page
+        pdf.addImage(dataUrl, 'PNG', 0, 0, pageW, imgH)
+      } else {
+        // Multi-page: slice the image across A4 pages
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+        const sliceH = Math.floor((pageH / imgH) * img.height)
+        canvas.width = img.width
+        let yOffset = 0
+        let first = true
 
-      // Download as PNG (opens in browser as a clean document)
-      canvas.toBlob(blob => {
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `${resumeData.title || 'resume'}.png`
-        a.click()
-        URL.revokeObjectURL(url)
-        toast.success('Resume downloaded!', { id: toastId })
-      }, 'image/png')
+        while (yOffset < img.height) {
+          const h = Math.min(sliceH, img.height - yOffset)
+          canvas.height = h
+          ctx.clearRect(0, 0, canvas.width, h)
+          ctx.drawImage(img, 0, yOffset, img.width, h, 0, 0, img.width, h)
+          const slice = canvas.toDataURL('image/png')
+          if (!first) pdf.addPage()
+          pdf.addImage(slice, 'PNG', 0, 0, pageW, (h / img.width) * pageW)
+          yOffset += h
+          first = false
+        }
+      }
 
+      pdf.save(`${resumeData.title || 'resume'}.pdf`)
+      toast.success('PDF downloaded!', { id: toastId })
     } catch (err) {
-      console.error('Download failed:', err)
-      toast.error('Download failed: ' + err.message, { id: toastId })
+      console.error('PDF generation failed:', err)
+      toast.error('Failed: ' + err.message, { id: toastId })
     }
   }
   const goToPayment = () => navigate(`/payment/${resumeId}`)
