@@ -27,7 +27,7 @@ const allowedOrigins = [
 
 app.use(express.json());
 app.use(cors({ origin: allowedOrigins, credentials: true, methods: ['GET','POST','PUT','DELETE','OPTIONS'], allowedHeaders: ['Content-Type','Authorization'] }));
-app.options('*', cors({ origin: allowedOrigins, credentials: true }));
+app.options(/.*/, cors({ origin: allowedOrigins, credentials: true }));
 
 // Health check
 app.get('/', (req, res) => res.send("Server is live..."));
