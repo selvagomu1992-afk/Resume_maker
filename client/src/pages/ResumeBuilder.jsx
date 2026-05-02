@@ -232,7 +232,8 @@ const ResumeBuilder = () => {
           <div className='lg:col-span-7 max-lg:mt-6'>
             <div className='relative w-full'>
               <div className='absolute bottom-3 left-0 right-0 flex items-center justify-end gap-2'>
-                {resumeData.public && (
+                {/* Share button — always visible after paid */}
+                {(resumeData.public || isPaid) && (
                   <button onClick={handleShare} className='flex items-center p-2 px-4 gap-2 text-xs bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600 rounded-lg ring-blue-300 hover:ring transition-colors'>
                     <Share2Icon className='size-4' /> Share
                   </button>
