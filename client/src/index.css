@@ -25,18 +25,15 @@
     margin: 0;
   }
 
-  /* Hide everything */
   body * {
     visibility: hidden !important;
   }
 
-  /* Show only the resume content */
   #resume-preview,
   #resume-preview * {
     visibility: visible !important;
   }
 
-  /* Remove all wrappers and position resume at top-left */
   #resume-preview {
     position: fixed !important;
     inset: 0 !important;
@@ -50,7 +47,6 @@
     overflow: visible !important;
   }
 
-  /* Ensure inner template div fills the page */
   #resume-preview > div {
     width: 100% !important;
     max-width: 100% !important;

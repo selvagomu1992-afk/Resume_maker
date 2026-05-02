@@ -10,6 +10,7 @@ import ForgotPassword from './pages/ForgotPassword'
 import Payment from './pages/Payment'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
+import PrintResume from './pages/PrintResume'
 import { useDispatch } from 'react-redux'
 import api from './configs/api'
 import { login, setLoading } from './app/features/authSlice'
@@ -57,6 +58,7 @@ const App = () => {
         <Route path='forgot-password' element={<ForgotPassword />} />
         <Route path='/admin' element={<AdminLogin />} />
         <Route path='/admin/dashboard' element={<AdminDashboard />} />
+        <Route path='/print' element={<PrintResume />} />
 
       </Routes>
     </>

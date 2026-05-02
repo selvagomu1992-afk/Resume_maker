@@ -133,7 +133,10 @@ const ResumeBuilder = () => {
   }
 
   const downloadResume = () => {
-    window.print()
+    // Store resume data in sessionStorage and open dedicated print page
+    // This avoids Chrome's TrustedScript CSP error from window.print() on the builder page
+    sessionStorage.setItem('print_resume', JSON.stringify(resumeData))
+    window.open('/print', '_blank')
   }
   const goToPayment = () => navigate(`/payment/${resumeId}`)
 
