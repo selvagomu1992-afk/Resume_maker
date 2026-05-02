@@ -12,6 +12,8 @@ import EducationForm from '../components/EducationForm'
 import ProjectForm from '../components/ProjectForm'
 import SkillsForm from '../components/SkillsForm'
 import { useSelector } from 'react-redux'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 import api from '../configs/api'
 import toast from 'react-hot-toast'
 
@@ -132,11 +134,42 @@ const ResumeBuilder = () => {
     }
   }
 
-  const downloadResume = () => {
-    // Store resume data in sessionStorage and open dedicated print page
-    // This avoids Chrome's TrustedScript CSP error from window.print() on the builder page
-    sessionStorage.setItem('print_resume', JSON.stringify(resumeData))
-    window.open('/print', '_blank')
+  const downloadResume = async () => {
+    const element = document.getElementById('resume-preview')
+    if (!element) return
+
+    const toastId = toast.loading('Generating PDF...')
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+      })
+
+      const imgData = canvas.toDataURL('image/png')
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      })
+
+      const pdfWidth = pdf.internal.pageSize.getWidth()
+      const pdfHeight = pdf.internal.pageSize.getHeight()
+      const imgWidth = canvas.width
+      const imgHeight = canvas.height
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight)
+      const imgX = (pdfWidth - imgWidth * ratio) / 2
+      const imgY = 0
+
+      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio)
+      pdf.save(`${resumeData.title || 'resume'}.pdf`)
+      toast.success('PDF downloaded!', { id: toastId })
+    } catch (err) {
+      console.error('PDF generation failed:', err)
+      toast.error('Failed to generate PDF', { id: toastId })
+    }
   }
   const goToPayment = () => navigate(`/payment/${resumeId}`)
 
