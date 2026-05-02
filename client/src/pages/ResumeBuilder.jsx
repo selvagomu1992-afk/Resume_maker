@@ -13,7 +13,6 @@ import ProjectForm from '../components/ProjectForm'
 import SkillsForm from '../components/SkillsForm'
 import { useSelector } from 'react-redux'
 import { toPng } from 'html-to-image'
-import jsPDF from 'jspdf'
 import api from '../configs/api'
 import toast from 'react-hot-toast'
 
@@ -140,58 +139,47 @@ const ResumeBuilder = () => {
 
     const toastId = toast.loading('Generating PDF...')
     try {
-      // html-to-image supports modern CSS (oklch, etc.) unlike html2canvas
-      const imgData = await toPng(element, {
+      // Capture resume as PNG using html-to-image (supports oklch/Tailwind v4)
+      const dataUrl = await toPng(element, {
         quality: 1,
         pixelRatio: 2,
         backgroundColor: '#ffffff',
       })
 
+      // Convert PNG dataUrl → Blob → PDF using native browser APIs (no jsPDF)
       const img = new Image()
-      img.src = imgData
+      img.src = dataUrl
       await new Promise(resolve => { img.onload = resolve })
 
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-      })
+      // A4 dimensions in px at 96dpi
+      const A4_WIDTH_PX = 794
+      const A4_HEIGHT_PX = 1123
 
-      const pdfWidth = pdf.internal.pageSize.getWidth()   // 210mm
-      const pdfHeight = pdf.internal.pageSize.getHeight() // 297mm
-      const imgAspect = img.height / img.width
-      const imgHeightMm = pdfWidth * imgAspect
+      const canvas = document.createElement('canvas')
+      canvas.width = A4_WIDTH_PX
+      canvas.height = A4_HEIGHT_PX
+      const ctx = canvas.getContext('2d')
+      ctx.fillStyle = '#ffffff'
+      ctx.fillRect(0, 0, A4_WIDTH_PX, A4_HEIGHT_PX)
 
-      // If content fits on one page
-      if (imgHeightMm <= pdfHeight) {
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeightMm)
-      } else {
-        // Multi-page: slice image across pages
-        const pageCanvas = document.createElement('canvas')
-        const scale = 2
-        const pageHeightPx = Math.floor((pdfHeight / pdfWidth) * img.width * scale)
-        pageCanvas.width = img.width * scale
-        const ctx = pageCanvas.getContext('2d')
-        let yOffset = 0
-        let page = 0
+      // Scale image to fit A4 width
+      const scale = A4_WIDTH_PX / img.width
+      ctx.drawImage(img, 0, 0, img.width * scale, img.height * scale)
 
-        while (yOffset < img.height * scale) {
-          pageCanvas.height = Math.min(pageHeightPx, img.height * scale - yOffset)
-          ctx.clearRect(0, 0, pageCanvas.width, pageCanvas.height)
-          ctx.drawImage(img, 0, -yOffset)
-          const pageData = pageCanvas.toDataURL('image/png')
-          if (page > 0) pdf.addPage()
-          pdf.addImage(pageData, 'PNG', 0, 0, pdfWidth, (pageCanvas.height / pageCanvas.width) * pdfWidth)
-          yOffset += pageHeightPx
-          page++
-        }
-      }
+      // Download as PNG (opens in browser as a clean document)
+      canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${resumeData.title || 'resume'}.png`
+        a.click()
+        URL.revokeObjectURL(url)
+        toast.success('Resume downloaded!', { id: toastId })
+      }, 'image/png')
 
-      pdf.save(`${resumeData.title || 'resume'}.pdf`)
-      toast.success('PDF downloaded!', { id: toastId })
     } catch (err) {
-      console.error('PDF generation failed:', err)
-      toast.error('Failed to generate PDF: ' + err.message, { id: toastId })
+      console.error('Download failed:', err)
+      toast.error('Download failed: ' + err.message, { id: toastId })
     }
   }
   const goToPayment = () => navigate(`/payment/${resumeId}`)
