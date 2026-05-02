@@ -134,29 +134,30 @@ const ResumeBuilder = () => {
 
   const downloadResume = () => {
     const resumeEl = document.getElementById('resume-preview')
-    if (!resumeEl) return
+    if (!resumeEl) { window.print(); return }
 
-    const iframe = document.createElement('iframe')
-    iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:none;'
-    document.body.appendChild(iframe)
+    // Open resume in a new tab and print from there — avoids Trusted Types CSP issues
+    const newTab = window.open('', '_blank')
+    if (!newTab) { window.print(); return }
 
-    const doc = iframe.contentWindow.document
     const styles = Array.from(document.styleSheets)
       .map(sheet => {
         try { return Array.from(sheet.cssRules).map(r => r.cssText).join('\n') }
         catch { return '' }
       }).join('\n')
 
-    doc.open()
-    doc.write(`<!DOCTYPE html><html><head><title>Resume</title>
-      <style>*{margin:0;padding:0;box-sizing:border-box;}body{background:white;}@page{size:A4;margin:0;}</style>
+    newTab.document.write(`<!DOCTYPE html><html><head>
+      <title>${document.title}</title>
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: white; }
+        @page { size: A4; margin: 0; }
+      </style>
       <style>${styles}</style>
-      </head><body>${resumeEl.outerHTML}</body></html>`)
-    doc.close()
-
-    iframe.contentWindow.focus()
-    iframe.contentWindow.print()
-    setTimeout(() => document.body.removeChild(iframe), 1000)
+    </head><body>${resumeEl.outerHTML}</body></html>`)
+    newTab.document.close()
+    newTab.focus()
+    setTimeout(() => { newTab.print(); newTab.close() }, 500)
   }
   const goToPayment = () => navigate(`/payment/${resumeId}`)
 
