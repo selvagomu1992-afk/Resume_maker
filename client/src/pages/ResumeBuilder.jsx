@@ -73,7 +73,6 @@ const ResumeBuilder = () => {
 
   useEffect(() => {
     const orderId = searchParams.get('order_id')
-    const paymentStatus = searchParams.get('payment_status')
 
     const init = async () => {
       // Load resume from DB first
@@ -86,18 +85,20 @@ const ResumeBuilder = () => {
         return
       }
 
-      // Cashfree redirected back with PAID status — update DB and show Download button
-      if (orderId && paymentStatus === 'PAID' && !paymentVerified.current) {
+      // If order_id is in URL, Cashfree redirected back after payment — verify it
+      if (orderId && !paymentVerified.current) {
         paymentVerified.current = true
         try {
           const { data } = await api.post('/api/payment/verify', { orderId, resumeId })
           if (data.isPaid) {
             setIsPaid(true)
             toast.success('Payment successful! Click Download PDF to save your resume.')
+          } else {
+            toast.error('Payment not completed. Please try again.')
           }
         } catch (err) {
           console.error('Verify failed:', err.message)
-          toast.error('Could not confirm payment. Please refresh the page.')
+          toast.error('Could not confirm payment. Please refresh.')
         }
       }
 

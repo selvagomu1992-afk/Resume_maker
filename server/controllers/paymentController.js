@@ -16,6 +16,8 @@ export const createOrder = async (req, res) => {
         const { resumeId } = req.body;
         const orderId = `order_${Date.now()}_${resumeId || Math.floor(Math.random() * 1000)}`;
 
+        const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '')
+
         const request = {
             order_amount: 1.00,
             order_currency: "INR",
@@ -26,8 +28,8 @@ export const createOrder = async (req, res) => {
                 customer_name: "Resume User"
             },
             order_meta: {
-                return_url: `${process.env.FRONTEND_URL}/app/builder/${resumeId}?order_id={order_id}&payment_status={order_status}`,
-                notify_url: `${process.env.BACKEND_URL}/api/payment/order/webhook`
+                return_url: `${frontendUrl}/app/builder/${resumeId}?order_id=${orderId}`,
+                notify_url: `${(process.env.BACKEND_URL || 'https://resume-backend-757i.onrender.com').replace(/\/$/, '')}/api/payment/order/webhook`
             }
         };
 
@@ -46,35 +48,38 @@ export const createOrder = async (req, res) => {
 }
 
 // POST /api/payment/verify
-// Called after Cashfree redirects back — verifies the order server-side and marks resume as paid
 export const verifyPayment = async (req, res) => {
     try {
         const { orderId, resumeId } = req.body;
-
-        console.log('verifyPayment called | orderId:', orderId, '| resumeId:', resumeId)
+        console.log('verifyPayment | orderId:', orderId, '| resumeId:', resumeId)
 
         if (!orderId || !resumeId) {
             return res.status(400).json({ success: false, message: "Missing orderId or resumeId" });
         }
 
-        // Check if already paid in DB
+        // Already paid — return immediately
         const existing = await Resume.findById(resumeId);
         if (existing?.isPaid) {
-            console.log('Already paid in DB | resumeId:', resumeId)
             return res.json({ success: true, isPaid: true });
         }
 
-        // Directly mark as paid — orderId from Cashfree return_url is proof of payment
-        // Cashfree only appends payment_status=PAID to return_url when payment succeeds
-        const updated = await Resume.findByIdAndUpdate(
-            resumeId,
-            { isPaid: true, paidOrderId: orderId },
-            { new: true }
-        );
+        // Verify with Cashfree that this order is actually PAID
+        const cashfree = getCashfree();
+        const response = await cashfree.PGFetchOrder(orderId);
+        const orderStatus = response?.data?.order_status;
+        console.log('Cashfree order_status:', orderStatus)
 
-        console.log('DB updated | resumeId:', resumeId, '| isPaid:', updated?.isPaid)
-        return res.json({ success: true, isPaid: true });
-
+        if (orderStatus === 'PAID') {
+            const updated = await Resume.findByIdAndUpdate(
+                resumeId,
+                { isPaid: true, paidOrderId: orderId },
+                { new: true }
+            );
+            console.log('DB updated | isPaid:', updated?.isPaid)
+            return res.json({ success: true, isPaid: true });
+        } else {
+            return res.json({ success: false, isPaid: false, status: orderStatus });
+        }
     } catch (error) {
         console.error("Verify Payment Error:", error.message);
         res.status(500).json({ success: false, message: error.message });
