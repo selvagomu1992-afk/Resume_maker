@@ -45,6 +45,7 @@ export const getAllUsers = async (req, res) => {
                     createdAt: user.createdAt,
                     totalResumes: resumes.length,
                     paidResumes: resumes.filter(r => r.isPaid).length,
+                    paidAmount: resumes.filter(r => r.isPaid).length * 49,
                 };
             })
         );
@@ -62,10 +63,11 @@ export const getStats = async (req, res) => {
         const totalUsers = await User.countDocuments();
         const totalResumes = await Resume.countDocuments();
         const paidResumes = await Resume.countDocuments({ isPaid: true });
+        const totalRevenue = paidResumes * 49; // ₹49 per resume
 
         return res.status(200).json({
             success: true,
-            stats: { totalUsers, totalResumes, paidResumes }
+            stats: { totalUsers, totalResumes, paidResumes, totalRevenue }
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });

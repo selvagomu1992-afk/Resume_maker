@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Users, FileText, CreditCard, LogOut, ShieldCheck, Search } from 'lucide-react'
+import { Users, FileText, CreditCard, LogOut, ShieldCheck, Search, IndianRupee } from 'lucide-react'
 import api from '../configs/api'
 import toast from 'react-hot-toast'
 
 const AdminDashboard = () => {
     const navigate = useNavigate()
     const [users, setUsers] = useState([])
-    const [stats, setStats] = useState({ totalUsers: 0, totalResumes: 0, paidResumes: 0 })
+    const [stats, setStats] = useState({ totalUsers: 0, totalResumes: 0, paidResumes: 0, totalRevenue: 0 })
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState('')
 
@@ -70,7 +70,7 @@ const AdminDashboard = () => {
             <div className='max-w-7xl mx-auto px-4 py-8'>
 
                 {/* Stats Cards */}
-                <div className='grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8'>
+                <div className='grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8'>
                     <StatCard
                         icon={<Users className='size-6 text-indigo-600' />}
                         bg='bg-indigo-50'
@@ -88,6 +88,12 @@ const AdminDashboard = () => {
                         bg='bg-green-50'
                         label='Paid Resumes'
                         value={stats.paidResumes}
+                    />
+                    <StatCard
+                        icon={<IndianRupee className='size-6 text-yellow-600' />}
+                        bg='bg-yellow-50'
+                        label='Total Revenue'
+                        value={`₹${stats.totalRevenue}`}
                     />
                 </div>
 
@@ -122,13 +128,14 @@ const AdminDashboard = () => {
                                         <th className='px-6 py-3'>Joined</th>
                                         <th className='px-6 py-3 text-center'>Resumes</th>
                                         <th className='px-6 py-3 text-center'>Paid</th>
+                                        <th className='px-6 py-3 text-center'>Amount</th>
                                         <th className='px-6 py-3 text-center'>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody className='divide-y divide-gray-100'>
                                     {filtered.length === 0 ? (
                                         <tr>
-                                            <td colSpan={7} className='text-center py-10 text-gray-400'>
+                                            <td colSpan={8} className='text-center py-10 text-gray-400'>
                                                 No users found
                                             </td>
                                         </tr>
@@ -151,6 +158,11 @@ const AdminDashboard = () => {
                                                 <td className='px-6 py-4 text-center'>
                                                     <span className='inline-flex items-center justify-center w-7 h-7 rounded-full bg-green-100 text-green-700 font-semibold text-xs'>
                                                         {user.paidResumes}
+                                                    </span>
+                                                </td>
+                                                <td className='px-6 py-4 text-center'>
+                                                    <span className='font-semibold text-yellow-700'>
+                                                        {user.paidAmount > 0 ? `₹${user.paidAmount}` : '—'}
                                                     </span>
                                                 </td>
                                                 <td className='px-6 py-4 text-center'>
