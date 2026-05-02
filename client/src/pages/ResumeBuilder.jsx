@@ -12,7 +12,7 @@ import EducationForm from '../components/EducationForm'
 import ProjectForm from '../components/ProjectForm'
 import SkillsForm from '../components/SkillsForm'
 import { useSelector } from 'react-redux'
-import html2canvas from 'html2canvas'
+import { toPng } from 'html-to-image'
 import jsPDF from 'jspdf'
 import api from '../configs/api'
 import toast from 'react-hot-toast'
@@ -140,35 +140,58 @@ const ResumeBuilder = () => {
 
     const toastId = toast.loading('Generating PDF...')
     try {
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
+      // html-to-image supports modern CSS (oklch, etc.) unlike html2canvas
+      const imgData = await toPng(element, {
+        quality: 1,
+        pixelRatio: 2,
         backgroundColor: '#ffffff',
-        logging: false,
       })
 
-      const imgData = canvas.toDataURL('image/png')
+      const img = new Image()
+      img.src = imgData
+      await new Promise(resolve => { img.onload = resolve })
+
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4',
       })
 
-      const pdfWidth = pdf.internal.pageSize.getWidth()
-      const pdfHeight = pdf.internal.pageSize.getHeight()
-      const imgWidth = canvas.width
-      const imgHeight = canvas.height
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight)
-      const imgX = (pdfWidth - imgWidth * ratio) / 2
-      const imgY = 0
+      const pdfWidth = pdf.internal.pageSize.getWidth()   // 210mm
+      const pdfHeight = pdf.internal.pageSize.getHeight() // 297mm
+      const imgAspect = img.height / img.width
+      const imgHeightMm = pdfWidth * imgAspect
 
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio)
+      // If content fits on one page
+      if (imgHeightMm <= pdfHeight) {
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeightMm)
+      } else {
+        // Multi-page: slice image across pages
+        const pageCanvas = document.createElement('canvas')
+        const scale = 2
+        const pageHeightPx = Math.floor((pdfHeight / pdfWidth) * img.width * scale)
+        pageCanvas.width = img.width * scale
+        const ctx = pageCanvas.getContext('2d')
+        let yOffset = 0
+        let page = 0
+
+        while (yOffset < img.height * scale) {
+          pageCanvas.height = Math.min(pageHeightPx, img.height * scale - yOffset)
+          ctx.clearRect(0, 0, pageCanvas.width, pageCanvas.height)
+          ctx.drawImage(img, 0, -yOffset)
+          const pageData = pageCanvas.toDataURL('image/png')
+          if (page > 0) pdf.addPage()
+          pdf.addImage(pageData, 'PNG', 0, 0, pdfWidth, (pageCanvas.height / pageCanvas.width) * pdfWidth)
+          yOffset += pageHeightPx
+          page++
+        }
+      }
+
       pdf.save(`${resumeData.title || 'resume'}.pdf`)
       toast.success('PDF downloaded!', { id: toastId })
     } catch (err) {
       console.error('PDF generation failed:', err)
-      toast.error('Failed to generate PDF', { id: toastId })
+      toast.error('Failed to generate PDF: ' + err.message, { id: toastId })
     }
   }
   const goToPayment = () => navigate(`/payment/${resumeId}`)
