@@ -133,31 +133,7 @@ const ResumeBuilder = () => {
   }
 
   const downloadResume = () => {
-    const resumeEl = document.getElementById('resume-preview')
-    if (!resumeEl) { window.print(); return }
-
-    // Open resume in a new tab and print from there — avoids Trusted Types CSP issues
-    const newTab = window.open('', '_blank')
-    if (!newTab) { window.print(); return }
-
-    const styles = Array.from(document.styleSheets)
-      .map(sheet => {
-        try { return Array.from(sheet.cssRules).map(r => r.cssText).join('\n') }
-        catch { return '' }
-      }).join('\n')
-
-    newTab.document.write(`<!DOCTYPE html><html><head>
-      <title>${document.title}</title>
-      <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: white; }
-        @page { size: A4; margin: 0; }
-      </style>
-      <style>${styles}</style>
-    </head><body>${resumeEl.outerHTML}</body></html>`)
-    newTab.document.close()
-    newTab.focus()
-    setTimeout(() => { newTab.print(); newTab.close() }, 500)
+    window.print()
   }
   const goToPayment = () => navigate(`/payment/${resumeId}`)
 
