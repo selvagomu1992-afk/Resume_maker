@@ -16,7 +16,11 @@ export const createOrder = async (req, res) => {
         const { resumeId } = req.body;
         const orderId = `order_${Date.now()}_${resumeId || Math.floor(Math.random() * 1000)}`;
 
-        const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '')
+        const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, '')
+        const backendUrl = (process.env.BACKEND_URL || 'https://resume-backend-757i.onrender.com').replace(/\/+$/, '')
+
+        // Build return_url without any Cashfree template variables — hardcode orderId directly
+        const returnUrl = `${frontendUrl}/app/builder/${resumeId}?order_id=${orderId}`
 
         const request = {
             order_amount: 1.00,
@@ -28,10 +32,12 @@ export const createOrder = async (req, res) => {
                 customer_name: "Resume User"
             },
             order_meta: {
-                return_url: `${frontendUrl}/app/builder/${resumeId}?order_id=${orderId}`,
-                notify_url: `${(process.env.BACKEND_URL || 'https://resume-backend-757i.onrender.com').replace(/\/$/, '')}/api/payment/order/webhook`
+                return_url: returnUrl,
+                notify_url: `${backendUrl}/api/payment/order/webhook`
             }
         };
+
+        console.log('return_url:', returnUrl)
 
         const cashfree = getCashfree();
         const response = await cashfree.PGCreateOrder(request);
