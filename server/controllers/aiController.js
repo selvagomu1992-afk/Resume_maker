@@ -24,7 +24,8 @@ export const enhanceProfessionalSummary = async (req, res) => {
         const enhancedContent = response.choices[0].message.content;
         return res.status(200).json({ enhancedContent })
     } catch (error) {
-        console.error('enhance-pro-sum error:', error?.response?.data || error.message)
+        const errDetail = error?.response?.data || error?.cause || error.message
+        console.error('enhance-pro-sum error:', JSON.stringify(errDetail))
         return res.status(500).json({ message: 'AI enhancement failed: ' + (error?.message || 'Unknown error') })
     }
 }
@@ -50,7 +51,8 @@ export const enhanceJobDescription = async (req, res) => {
         const enhancedContent = response.choices[0].message.content;
         return res.status(200).json({ enhancedContent })
     } catch (error) {
-        console.error('enhance-job-desc error:', error?.response?.data || error.message)
+        const errDetail = error?.response?.data || error?.cause || error.message
+        console.error('enhance-job-desc error:', JSON.stringify(errDetail))
         return res.status(500).json({ message: 'AI enhancement failed: ' + (error?.message || 'Unknown error') })
     }
 }
