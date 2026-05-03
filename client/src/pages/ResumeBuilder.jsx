@@ -286,40 +286,31 @@ const ResumeBuilder = () => {
 
           {/* Right Panel - Preview */}
           <div className='lg:col-span-7 max-lg:mt-6'>
-            <div className='relative w-full'>
-              <div className='absolute bottom-3 left-0 right-0 flex items-center justify-end gap-2'>
-                {/* Share button — always visible after paid */}
-                {(resumeData.public || isPaid) && (
-                  <button onClick={handleShare} className='flex items-center p-2 px-4 gap-2 text-xs bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600 rounded-lg ring-blue-300 hover:ring transition-colors'>
-                    <Share2Icon className='size-4' /> Share
-                  </button>
-                )}
-                <button onClick={changeResumeVisibility} className='flex items-center p-2 px-4 gap-2 text-xs bg-gradient-to-br from-purple-100 to-purple-200 text-purple-600 ring-purple-300 rounded-lg hover:ring transition-colors'>
-                  {resumeData.public ? <EyeIcon className="size-4" /> : <EyeOffIcon className="size-4" />}
-                  {resumeData.public ? 'Public' : 'Private'}
+            {/* Action buttons — row above preview, wraps on mobile */}
+            <div className='flex flex-wrap items-center justify-end gap-2 mb-3'>
+              {/* Share */}
+              {(resumeData.public || isPaid) && (
+                <button onClick={handleShare} className='flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-blue-50 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors'>
+                  <Share2Icon className='size-3.5' /> Share
                 </button>
-                {/* Show nothing until page is ready to avoid flash of wrong button */}
-                {pageReady && (
-                  <>
-                    {isPaid && (
-                      <button
-                        onClick={downloadResume}
-                        className='flex items-center gap-2 px-5 py-2 text-xs rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white shadow-sm hover:from-green-600 hover:to-green-700 transition-all'
-                      >
-                        <DownloadIcon className='size-4' /> Download PDF
-                      </button>
-                    )}
-                    {!isPaid && (
-                      <button
-                        onClick={goToPayment}
-                        className='flex items-center gap-2 px-5 py-2 text-xs rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm hover:from-indigo-600 hover:to-indigo-700 transition-all'
-                      >
-                        <span className='text-base leading-none'>₹</span> Pay ₹49
-                      </button>
-                    )}
-                  </>
-                )}
-              </div>
+              )}
+              {/* Public / Private toggle */}
+              <button onClick={changeResumeVisibility} className='flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-purple-50 text-purple-600 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors'>
+                {resumeData.public ? <EyeIcon className='size-3.5' /> : <EyeOffIcon className='size-3.5' />}
+                {resumeData.public ? 'Public' : 'Private'}
+              </button>
+              {/* Pay / Download */}
+              {pageReady && (
+                isPaid ? (
+                  <button onClick={downloadResume} className='flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors'>
+                    <DownloadIcon className='size-3.5' /> Download PDF
+                  </button>
+                ) : (
+                  <button onClick={goToPayment} className='flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors'>
+                    <span className='text-sm leading-none'>₹</span> Pay ₹49
+                  </button>
+                )
+              )}
             </div>
 
             <ResumePreview data={resumeData} template={resumeData.template} accentColor={resumeData.accent_color} />
