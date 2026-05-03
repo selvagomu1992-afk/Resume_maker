@@ -10,11 +10,11 @@ const Hero = () => {
     const [menuOpen, setMenuOpen] = React.useState(false);
 
     const logos = [
-        'https://saasly.prebuiltui.com/assets/companies-logo/instagram.svg',
-        'https://saasly.prebuiltui.com/assets/companies-logo/framer.svg',
-        'https://saasly.prebuiltui.com/assets/companies-logo/microsoft.svg',
-        'https://saasly.prebuiltui.com/assets/companies-logo/huawei.svg',
-        'https://saasly.prebuiltui.com/assets/companies-logo/walmart.svg',
+        'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
+        'https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg',
+        'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg',
+        'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg',
+        'https://upload.wikimedia.org/wikipedia/commons/b/b9/Slack_Technologies_Logo.svg',
     ]
 
   return (
@@ -111,7 +111,15 @@ const Hero = () => {
             <p className="py-6 text-slate-600 mt-14">Trusting by leading brands, including</p>
 
             <div className="flex flex-wrap justify-between max-sm:justify-center gap-6 max-w-3xl w-full mx-auto py-4" id="logo-container">
-                {logos.map((logo, index) => <img key={index} src={logo} alt="logo" className="h-6 w-auto max-w-xs" />)}
+                {logos.map((logo, index) => (
+                    <img
+                        key={index}
+                        src={logo}
+                        alt="logo"
+                        className="h-6 w-auto max-w-xs opacity-60 hover:opacity-100 transition-opacity grayscale hover:grayscale-0"
+                        onError={e => { e.target.style.display = 'none' }}
+                    />
+                ))}
             </div>
         </div>
     </div>
