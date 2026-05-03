@@ -18,9 +18,9 @@ const Hero = () => {
 
   return (
     <>
-    <div className="min-h-screen pb-20">
-        {/* Navbar */}
-        <nav className="z-50 flex items-center justify-between w-full py-4 px-6 md:px-16 lg:px-24 xl:px-40 text-sm">
+    <div className="min-h-screen pb-20 bg-white">
+        {/* Navbar — transparent background */}
+        <nav className="z-50 flex items-center justify-between w-full py-4 px-6 md:px-16 lg:px-24 xl:px-40 text-sm bg-transparent">
             <a href="https://resumemaxx.onrender.com">
                 <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-indigo-400 bg-clip-text text-transparent tracking-tight">ResumeMaxx</span>
             </a>

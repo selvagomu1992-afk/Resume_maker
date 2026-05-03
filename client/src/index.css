@@ -6,6 +6,10 @@
   font-family: "Outfit", sans-serif;
 }
 
+body {
+  background-color: #ffffff;
+}
+
 @layer base {
   button {
     @apply cursor-pointer;
