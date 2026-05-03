@@ -1,7 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import logo from '../../assets/logo.svg';
 
 const Hero = () => {
 
@@ -22,8 +21,8 @@ const Hero = () => {
     <div className="min-h-screen pb-20">
         {/* Navbar */}
         <nav className="z-50 flex items-center justify-between w-full py-4 px-6 md:px-16 lg:px-24 xl:px-40 text-sm">
-            <a href="https://prebuiltui.com">
-                <img src={logo} alt="logo" className="h-11 w-auto"/>
+            <a href="https://resumemaxx.onrender.com">
+                <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-indigo-400 bg-clip-text text-transparent tracking-tight">ResumeMaxx</span>
             </a>
 
             <div className="hidden md:flex items-center gap-8 transition duration-500 text-slate-800">
