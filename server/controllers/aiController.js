@@ -6,6 +6,10 @@ const aiCreate = async (params) => {
     try {
         return await ai.chat.completions.create(params)
     } catch (err) {
+        // Log full error details for debugging
+        console.error('AI error status:', err?.status)
+        console.error('AI error message:', err?.message)
+        console.error('AI error body:', JSON.stringify(err?.error || err?.response?.data || ''))
         if (err?.status === 429) {
             await new Promise(r => setTimeout(r, 2000))
             return await ai.chat.completions.create(params)
