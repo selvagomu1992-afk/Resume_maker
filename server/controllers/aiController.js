@@ -1,6 +1,19 @@
 import Resume from "../models/Resume.js";
 import ai from "../configs/ai.js";
 
+// Helper: call AI with one retry on 429
+const aiCreate = async (params) => {
+    try {
+        return await ai.chat.completions.create(params)
+    } catch (err) {
+        if (err?.status === 429) {
+            await new Promise(r => setTimeout(r, 2000))
+            return await ai.chat.completions.create(params)
+        }
+        throw err
+    }
+}
+
 // controller for enhancing a resume's professional summary
 // POST: /api/ai/enhance-pro-sum
 export const enhanceProfessionalSummary = async (req, res) => {
@@ -13,7 +26,7 @@ export const enhanceProfessionalSummary = async (req, res) => {
 
         console.log('AI enhance-pro-sum | model:', process.env.OPEN_MODEL, '| baseURL:', process.env.OPENAI_BASE_URL)
 
-        const response = await ai.chat.completions.create({
+        const response = await aiCreate({
             model: process.env.OPEN_MODEL,
             messages: [
                 { role: "system", content: "You are an expert in resume writing. Your task is to enhance the professional summary of a resume. The summary should be 1-2 sentences also highlighting key skills, experience, and career objectives. Make it compelling and ATS-friendly. and only return text no options or anything else." },
@@ -40,7 +53,7 @@ export const enhanceJobDescription = async (req, res) => {
             return res.status(400).json({ message: 'Missing required fields: userContent' })
         }
 
-        const response = await ai.chat.completions.create({
+        const response = await aiCreate({
             model: process.env.OPEN_MODEL,
             messages: [
                 { role: "system", content: "You are an expert in resume writing. Your task is to enhance the job description of a resume. The job description should be only in 1-2 sentence also highlighting key responsibilities and achievements. Use action verbs and quantifiable results where possible. Make it ATS-friendly. and only return text no options or anything else." },
@@ -117,17 +130,13 @@ export const uploadResume = async (req, res) => {
         }
         `;
 
-       const response = await ai.chat.completions.create({
+       const response = await aiCreate({
             model: process.env.OPEN_MODEL,
             messages: [
-                { role: "system",
-                 content: systemPrompt },
-                {
-                    role: "user",
-                    content: userPrompt,
-                },
-        ],
-        response_format: {type:  'json_object'}
+                { role: "system", content: systemPrompt },
+                { role: "user", content: userPrompt },
+            ],
+            response_format: { type: 'json_object' }
         })
 
         const extractedData = response.choices[0].message.content;
