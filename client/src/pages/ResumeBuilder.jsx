@@ -294,11 +294,13 @@ const ResumeBuilder = () => {
                   <Share2Icon className='size-3.5' /> Share
                 </button>
               )}
-              {/* Public / Private toggle */}
-              <button onClick={changeResumeVisibility} className='flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-purple-50 text-purple-600 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors'>
-                {resumeData.public ? <EyeIcon className='size-3.5' /> : <EyeOffIcon className='size-3.5' />}
-                {resumeData.public ? 'Public' : 'Private'}
-              </button>
+              {/* Public / Private toggle — only visible after payment */}
+              {isPaid && (
+                <button onClick={changeResumeVisibility} className='flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-purple-50 text-purple-600 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors'>
+                  {resumeData.public ? <EyeIcon className='size-3.5' /> : <EyeOffIcon className='size-3.5' />}
+                  {resumeData.public ? 'Public' : 'Private'}
+                </button>
+              )}
               {/* Pay / Download */}
               {pageReady && (
                 isPaid ? (
