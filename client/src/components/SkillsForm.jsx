@@ -72,7 +72,7 @@ const SkillsForm = ({ data, onChange }) => {
                                 key={l}
                                 onClick={() => setNewLevel(l)}
                                 title={LEVEL_LABELS[l - 1]}
-                                className={`w-5 h-5 rounded-full border-2 transition-all ${newLevel >= l
+                                className={`w-5 h-5 rounded-sm border-2 transition-all ${newLevel >= l
                                     ? 'bg-blue-500 border-blue-500'
                                     : 'bg-white border-gray-300 hover:border-blue-400'
                                     }`}
@@ -100,7 +100,7 @@ const SkillsForm = ({ data, onChange }) => {
                                         key={l}
                                         onClick={() => updateLevel(i, l)}
                                         title={LEVEL_LABELS[l - 1]}
-                                        className={`w-4 h-4 rounded-full border transition-all ${skill.level >= l
+                                        className={`w-4 h-4 rounded-sm border transition-all ${skill.level >= l
                                             ? 'bg-blue-500 border-blue-500'
                                             : 'bg-white border-gray-300 hover:border-blue-400'
                                             }`}

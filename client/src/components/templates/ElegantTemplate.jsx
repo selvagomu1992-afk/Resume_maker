@@ -154,12 +154,12 @@ const ElegantTemplate = ({ data, accentColor }) => {
                                     return (
                                         <div key={i} className="flex items-center justify-between gap-2">
                                             <span className="text-xs text-gray-700 flex-1">{skill.name}</span>
-                                            {/* 5 dot-rings */}
+                                            {/* 5 squares */}
                                             <div className="flex gap-1 shrink-0">
                                                 {[1, 2, 3, 4, 5].map(d => (
                                                     <span
                                                         key={d}
-                                                        className="w-3 h-3 rounded-full border-2 transition-colors"
+                                                        className="w-3 h-3 rounded-sm border-2 transition-colors"
                                                         style={{
                                                             borderColor: accentColor,
                                                             backgroundColor: d <= skill.level ? accentColor : "transparent",
