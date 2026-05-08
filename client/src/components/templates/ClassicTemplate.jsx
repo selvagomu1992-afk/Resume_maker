@@ -147,13 +147,22 @@ const ClassicTemplate = ({ data, accentColor }) => {
                     <h2 className="text-xl font-semibold mb-4" style={{ color: accentColor }}>
                         CORE SKILLS
                     </h2>
-
-                    <div className="flex gap-4 flex-wrap">
-                        {data.skills.map((skill, index) => (
-                            <div key={index} className="text-gray-700">
-                                • {skill.name}
-                            </div>
-                        ))}
+                    <div className="flex flex-col gap-2.5">
+                        {data.skills.map((skill, index) => {
+                            const s = typeof skill === 'string' ? { name: skill, level: 3 } : skill
+                            return (
+                                <div key={index} className="flex items-center justify-between gap-3">
+                                    <span className="text-gray-700 text-sm w-32 shrink-0">{s.name}</span>
+                                    <div className="flex gap-1 shrink-0">
+                                        {[1,2,3,4,5].map(d => (
+                                            <span key={d} className="w-4 h-4 rounded-sm border-2"
+                                                style={{ borderColor: accentColor, backgroundColor: d <= (s.level ?? 3) ? accentColor : 'transparent' }}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )
+                        })}
                     </div>
                 </section>
             )}

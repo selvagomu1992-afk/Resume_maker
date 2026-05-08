@@ -120,9 +120,22 @@ const MinimalTemplate = ({ data, accentColor }) => {
                     <h2 className="text-sm uppercase tracking-widest mb-6 font-medium" style={{ color: accentColor }}>
                         Skills
                     </h2>
-
-                    <div className="text-gray-700">
-                        {data.skills.map(s => s.name).join(" • ")}
+                    <div className="flex flex-col gap-2.5">
+                        {data.skills.map((skill, index) => {
+                            const s = typeof skill === 'string' ? { name: skill, level: 3 } : skill
+                            return (
+                                <div key={index} className="flex items-center justify-between gap-3">
+                                    <span className="text-gray-700 text-sm w-32 shrink-0">{s.name}</span>
+                                    <div className="flex gap-1 shrink-0">
+                                        {[1,2,3,4,5].map(d => (
+                                            <span key={d} className="w-4 h-4 rounded-sm border-2"
+                                                style={{ borderColor: accentColor, backgroundColor: d <= (s.level ?? 3) ? accentColor : 'transparent' }}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )
+                        })}
                     </div>
                 </section>
             )}

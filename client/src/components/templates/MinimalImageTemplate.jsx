@@ -96,11 +96,23 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                             <h2 className="text-sm font-semibold tracking-widest text-zinc-600 mb-3">
                                 SKILLS
                             </h2>
-                            <ul className="space-y-1 text-sm">
-                                {data.skills.map((skill, index) => (
-                                    <li key={index}>{skill.name}</li>
-                                ))}
-                            </ul>
+                            <div className="space-y-2">
+                                {data.skills.map((skill, index) => {
+                                    const s = typeof skill === 'string' ? { name: skill, level: 3 } : skill
+                                    return (
+                                        <div key={index} className="flex flex-col gap-1">
+                                            <span className="text-sm text-zinc-700">{s.name}</span>
+                                            <div className="flex gap-1">
+                                                {[1,2,3,4,5].map(d => (
+                                                    <span key={d} className="w-4 h-2 rounded-sm border"
+                                                        style={{ borderColor: accentColor, backgroundColor: d <= (s.level ?? 3) ? accentColor : 'transparent' }}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
                         </section>
                     )}
                 </aside>
