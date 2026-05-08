@@ -16,11 +16,16 @@ const TemplateSelector = ({ selectedTemplate, onChange }) => {
             preview: "Sleek design with strategic use of color and modern font choices"
         },
         {
+            id: "executive",
+            name: "Executive",
+            preview: "Two-column layout with a bold colored sidebar — ideal for senior roles"
+        },
+        {
             id: "minimal-image",
             name: "Minimal Image",
-            preview: "Minimal design with a single image and clean typography"
+            preview: "Minimal design with a profile photo and clean typography"
         },
-            {
+        {
             id: "minimal",
             name: "Minimal",
             preview: "Ultra-clean design that puts your content front and center"
@@ -35,6 +40,16 @@ const TemplateSelector = ({ selectedTemplate, onChange }) => {
             name: "Timeline",
             preview: "Vertical timeline experience section with a clean right-sidebar accent"
         },
+        {
+            id: "infographic",
+            name: "Infographic",
+            preview: "Dark sidebar with accent skill progress bars — modern & eye-catching"
+        },
+        {
+            id: "elegant",
+            name: "Elegant",
+            preview: "Centered thin-font header with dot-ring skill rating indicators"
+        },
     ]
   return (
     <div className='relative'>
@@ -42,7 +57,7 @@ const TemplateSelector = ({ selectedTemplate, onChange }) => {
         <Layout size={14} /> <span className='max-sm:hidden'>Template</span>
       </button>
       {isOpen && (
-        <div className='absolute top-full w-xs p-3 mt-2 space-y-3 z-10 bg-white rounded-md border border-gray-200 shadow-sm'>
+        <div className='absolute top-full w-xs p-3 mt-2 space-y-3 z-10 bg-white rounded-md border border-gray-200 shadow-sm max-h-[70vh] overflow-y-auto'>
             {templates.map((template)=>(
                 <div key={template.id} onClick={()=> {onChange(template.id); setIsOpen(false)}} className={`relative p-3 border rounded-md cursor-pointer transition-all ${selectedTemplate === template.id ?
                     "border-blue-400 bg-blue-100"

@@ -109,7 +109,7 @@ const CreativeTemplate = ({ data, accentColor }) => {
                                             className="w-2 h-2 rounded-full shrink-0"
                                             style={{ backgroundColor: accentColor }}
                                         />
-                                        {skill}
+                                        {skill.name}
                                     </div>
                                 ))}
                             </div>

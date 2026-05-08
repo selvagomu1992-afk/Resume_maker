@@ -172,7 +172,7 @@ const TimelineTemplate = ({ data, accentColor }) => {
                                     className="text-[10px] px-2 py-0.5 rounded-full font-medium"
                                     style={{ backgroundColor: accentColor + "22", color: accentColor }}
                                 >
-                                    {skill}
+                                    {skill.name}
                                 </span>
                             ))}
                         </div>

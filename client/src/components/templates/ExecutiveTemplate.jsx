@@ -100,7 +100,7 @@ const ExecutiveTemplate = ({ data, accentColor }) => {
                                 {data.skills.map((skill, i) => (
                                     <li key={i} className="text-sm text-white/90 flex items-center gap-2">
                                         <span className="w-1.5 h-1.5 rounded-full bg-white/50 shrink-0" />
-                                        {skill}
+                                        {skill.name}
                                     </li>
                                 ))}
                             </ul>
