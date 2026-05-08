@@ -309,7 +309,7 @@ const ResumeBuilder = () => {
                   </button>
                 ) : (
                   <button onClick={goToPayment} className='flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors'>
-                    <span className='text-sm leading-none'>₹</span> Download ₹49
+                    <span className='text-sm leading-none'>₹49</span> Download
                   </button>
                 )
               )}
