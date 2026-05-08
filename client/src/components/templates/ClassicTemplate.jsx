@@ -141,57 +141,58 @@ const ClassicTemplate = ({ data, accentColor }) => {
                 </section>
             )}
 
-            {/* Skills */}
-            {data.skills && data.skills.length > 0 && (
-                <section className="mb-6">
-                    <h2 className="text-xl font-semibold mb-4" style={{ color: accentColor }}>
-                        CORE SKILLS
-                    </h2>
-                    <div className="flex flex-col gap-2.5">
-                        {data.skills.map((skill, index) => {
-                            const s = typeof skill === 'string' ? { name: skill, level: 3 } : skill
-                            return (
-                                <div key={index} className="flex items-center justify-between gap-3">
-                                    <span className="text-gray-700 text-sm w-32 shrink-0">{s.name}</span>
-                                    <div className="flex gap-1 shrink-0">
-                                        {[1,2,3,4,5].map(d => (
-                                            <span key={d} className="w-4 h-4 rounded-sm border-2"
-                                                style={{ borderColor: accentColor, backgroundColor: d <= (s.level ?? 3) ? accentColor : 'transparent' }}
-                                            />
-                                        ))}
-                                    </div>
+            {/* Skills + Languages side by side */}
+            {(data.skills?.length > 0 || data.languages?.length > 0) && (
+                <section className="mb-4">
+                    <div className="grid grid-cols-2 gap-6">
+                        {/* Skills — 2 column compact grid */}
+                        {data.skills && data.skills.length > 0 && (
+                            <div>
+                                <h2 className="text-base font-semibold mb-2" style={{ color: accentColor }}>CORE SKILLS</h2>
+                                <div className="grid grid-cols-1 gap-1">
+                                    {data.skills.map((skill, i) => {
+                                        const s = typeof skill === 'string' ? { name: skill, level: 3 } : skill
+                                        return (
+                                            <div key={i} className="flex items-center justify-between gap-2">
+                                                <span className="text-xs text-gray-700 truncate">{s.name}</span>
+                                                <div className="flex gap-0.5 shrink-0">
+                                                    {[1,2,3,4,5].map(d => (
+                                                        <span key={d} className="w-3 h-3 rounded-sm border"
+                                                            style={{ borderColor: accentColor, backgroundColor: d <= (s.level ?? 3) ? accentColor : 'transparent' }}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
                                 </div>
-                            )
-                        })}
-                    </div>
-                </section>
-            )}
+                            </div>
+                        )}
 
-            {/* Languages */}
-            {data.languages && data.languages.length > 0 && (
-                <section className="mb-6">
-                    <h2 className="text-xl font-semibold mb-4" style={{ color: accentColor }}>
-                        LANGUAGES
-                    </h2>
-                    <div className="w-full">
-                        <div className="grid grid-cols-4 text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 px-1">
-                            <span>Language</span>
-                            <span className="text-center">Read</span>
-                            <span className="text-center">Write</span>
-                            <span className="text-center">Speak</span>
-                        </div>
-                        {data.languages.map((lang, i) => (
-                            <div key={i} className="grid grid-cols-4 items-center py-1.5 px-1 border-b border-gray-100 last:border-0">
-                                <span className="text-sm text-gray-800 font-medium">{lang.name}</span>
-                                {['read', 'write', 'speak'].map(f => (
-                                    <div key={f} className="flex justify-center">
-                                        <span className={`w-4 h-4 rounded-sm border-2 ${lang[f] ? '' : 'opacity-20'}`}
-                                            style={{ borderColor: accentColor, backgroundColor: lang[f] ? accentColor : 'transparent' }}
-                                        />
+                        {/* Languages — compact */}
+                        {data.languages && data.languages.length > 0 && (
+                            <div>
+                                <h2 className="text-base font-semibold mb-2" style={{ color: accentColor }}>LANGUAGES</h2>
+                                <div className="grid grid-cols-4 text-xs font-semibold text-gray-400 uppercase mb-1">
+                                    <span>Lang</span>
+                                    <span className="text-center">R</span>
+                                    <span className="text-center">W</span>
+                                    <span className="text-center">S</span>
+                                </div>
+                                {data.languages.map((lang, i) => (
+                                    <div key={i} className="grid grid-cols-4 items-center py-0.5 border-b border-gray-100 last:border-0">
+                                        <span className="text-xs text-gray-800 font-medium truncate">{lang.name}</span>
+                                        {['read','write','speak'].map(f => (
+                                            <div key={f} className="flex justify-center">
+                                                <span className={`w-3 h-3 rounded-sm border ${lang[f] ? '' : 'opacity-20'}`}
+                                                    style={{ borderColor: accentColor, backgroundColor: lang[f] ? accentColor : 'transparent' }}
+                                                />
+                                            </div>
+                                        ))}
                                     </div>
                                 ))}
                             </div>
-                        ))}
+                        )}
                     </div>
                 </section>
             )}

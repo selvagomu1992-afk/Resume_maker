@@ -129,16 +129,11 @@ const ModernTemplate = ({ data, accentColor }) => {
 					{/* Education */}
 					{data.education && data.education.length > 0 && (
 						<section>
-							<h2 className="text-2xl font-light mb-4 pb-2 border-b border-gray-200">
-								Education
-							</h2>
-
+							<h2 className="text-2xl font-light mb-4 pb-2 border-b border-gray-200">Education</h2>
 							<div className="space-y-4">
 								{data.education.map((edu, index) => (
 									<div key={index}>
-										<h3 className="font-semibold text-gray-900">
-											{edu.degree} {edu.field && `in ${edu.field}`}
-										</h3>
+										<h3 className="font-semibold text-gray-900">{edu.degree} {edu.field && `in ${edu.field}`}</h3>
 										<p style={{ color: accentColor }}>{edu.institution}</p>
 										<div className="flex justify-between items-center text-sm text-gray-600">
 											<span>{formatDate(edu.graduation_date)}</span>
@@ -150,21 +145,19 @@ const ModernTemplate = ({ data, accentColor }) => {
 						</section>
 					)}
 
-					{/* Skills */}
+					{/* Skills compact */}
 					{data.skills && data.skills.length > 0 && (
 						<section>
-							<h2 className="text-2xl font-light mb-4 pb-2 border-b border-gray-200">
-								Skills
-							</h2>
-							<div className="flex flex-col gap-2.5">
+							<h2 className="text-2xl font-light mb-4 pb-2 border-b border-gray-200">Skills</h2>
+							<div className="grid grid-cols-1 gap-1">
 								{data.skills.map((skill, index) => {
 									const s = typeof skill === 'string' ? { name: skill, level: 3 } : skill
 									return (
-										<div key={index} className="flex items-center justify-between gap-3">
-											<span className="text-gray-700 text-sm w-32 shrink-0">{s.name}</span>
-											<div className="flex gap-1 shrink-0">
+										<div key={index} className="flex items-center justify-between gap-2">
+											<span className="text-xs text-gray-700 truncate">{s.name}</span>
+											<div className="flex gap-0.5 shrink-0">
 												{[1,2,3,4,5].map(d => (
-													<span key={d} className="w-4 h-4 rounded-sm border-2"
+													<span key={d} className="w-3 h-3 rounded-sm border"
 														style={{ borderColor: accentColor, backgroundColor: d <= (s.level ?? 3) ? accentColor : 'transparent' }}
 													/>
 												))}
@@ -177,28 +170,22 @@ const ModernTemplate = ({ data, accentColor }) => {
 					)}
 				</div>
 
-				{/* Languages */}
+				{/* Languages compact */}
 				{data.languages && data.languages.length > 0 && (
-					<section className="mt-8">
-						<h2 className="text-2xl font-light mb-4 pb-2 border-b border-gray-200">Languages</h2>
-						<div className="grid grid-cols-4 text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
-							<span>Language</span>
-							<span className="text-center">Read</span>
-							<span className="text-center">Write</span>
-							<span className="text-center">Speak</span>
-						</div>
-						{data.languages.map((lang, i) => (
-							<div key={i} className="grid grid-cols-4 items-center py-1.5 border-b border-gray-100 last:border-0">
-								<span className="text-sm text-gray-800 font-medium">{lang.name}</span>
-								{['read', 'write', 'speak'].map(f => (
-									<div key={f} className="flex justify-center">
-										<span className={`w-4 h-4 rounded-sm border-2 ${lang[f] ? '' : 'opacity-20'}`}
-											style={{ borderColor: accentColor, backgroundColor: lang[f] ? accentColor : 'transparent' }}
-										/>
+					<section className="mt-6">
+						<h2 className="text-2xl font-light mb-3 pb-2 border-b border-gray-200">Languages</h2>
+						<div className="grid grid-cols-2 gap-x-8">
+							{data.languages.map((lang, i) => (
+								<div key={i} className="flex items-center justify-between py-0.5 border-b border-gray-100 last:border-0">
+									<span className="text-xs text-gray-800 font-medium">{lang.name}</span>
+									<div className="flex gap-1 text-xs">
+										{lang.read && <span className="px-1 py-0.5 rounded text-white text-xs" style={{ backgroundColor: accentColor }}>R</span>}
+										{lang.write && <span className="px-1 py-0.5 rounded text-white text-xs" style={{ backgroundColor: accentColor }}>W</span>}
+										{lang.speak && <span className="px-1 py-0.5 rounded text-white text-xs" style={{ backgroundColor: accentColor }}>S</span>}
 									</div>
-								))}
-							</div>
-						))}
+								</div>
+							))}
+						</div>
 					</section>
 				)}
 
