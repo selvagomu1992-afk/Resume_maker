@@ -23,7 +23,7 @@ export const createOrder = async (req, res) => {
         const returnUrl = `${frontendUrl}/app/builder/${resumeId}?order_id=${orderId}`
 
         const request = {
-            order_amount: 1.00,
+            order_amount: 49.00,
             order_currency: "INR",
             order_id: orderId,
             customer_details: {
