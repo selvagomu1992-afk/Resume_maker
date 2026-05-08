@@ -140,18 +140,45 @@ const ResumeBuilder = () => {
 
     const toastId = toast.loading('Generating PDF...')
     try {
-      // Capture as PNG — html-to-image handles oklch/Tailwind v4 colors correctly
+      // A4 at 96dpi = 794px wide
+      const A4_WIDTH = 794
+
+      // Save original styles
+      const originalWidth = element.style.width
+      const originalMinWidth = element.style.minWidth
+      const originalTransform = element.style.transform
+      const originalTransformOrigin = element.style.transformOrigin
+      const originalOverflow = element.style.overflow
+
+      // Force A4 width so mobile doesn't capture narrow layout
+      element.style.width = `${A4_WIDTH}px`
+      element.style.minWidth = `${A4_WIDTH}px`
+      element.style.transform = 'none'
+      element.style.transformOrigin = 'top left'
+      element.style.overflow = 'visible'
+
+      // Wait for reflow
+      await new Promise(r => setTimeout(r, 100))
+
       const dataUrl = await toPng(element, {
         quality: 1,
         pixelRatio: 2,
         backgroundColor: '#ffffff',
+        width: A4_WIDTH,
       })
+
+      // Restore original styles
+      element.style.width = originalWidth
+      element.style.minWidth = originalMinWidth
+      element.style.transform = originalTransform
+      element.style.transformOrigin = originalTransformOrigin
+      element.style.overflow = originalOverflow
 
       const img = new Image()
       img.src = dataUrl
       await new Promise(resolve => { img.onload = resolve })
 
-      // A4 size in mm
+      // A4 in mm: 210 x 297
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
       const pageW = pdf.internal.pageSize.getWidth()   // 210mm
       const pageH = pdf.internal.pageSize.getHeight()  // 297mm
@@ -160,10 +187,10 @@ const ResumeBuilder = () => {
       const imgH = pageW * imgAspect
 
       if (imgH <= pageH) {
-        // Single page
+        // Fits on one page
         pdf.addImage(dataUrl, 'PNG', 0, 0, pageW, imgH)
       } else {
-        // Multi-page: slice the image across A4 pages
+        // Multi-page: slice across A4 pages
         const canvas = document.createElement('canvas')
         const ctx = canvas.getContext('2d')
         const sliceH = Math.floor((pageH / imgH) * img.height)
@@ -188,6 +215,14 @@ const ResumeBuilder = () => {
       toast.success('PDF downloaded!', { id: toastId })
     } catch (err) {
       console.error('PDF generation failed:', err)
+      // Restore styles on error too
+      const element = document.getElementById('resume-preview')
+      if (element) {
+        element.style.width = ''
+        element.style.minWidth = ''
+        element.style.transform = ''
+        element.style.overflow = ''
+      }
       toast.error('Failed: ' + err.message, { id: toastId })
     }
   }
