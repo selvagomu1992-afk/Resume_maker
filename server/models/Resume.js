@@ -54,6 +54,16 @@ const ResumeSchema = new mongoose.Schema({
             speak: { type: Boolean, default: false },
         }
     ],
+    achievements: [
+        {
+            category: { type: String },   // e.g. "Manpower Reduction", "Sales Improvement"
+            title: { type: String },
+            from_value: { type: Number },
+            to_value: { type: Number },
+            unit: { type: String },        // e.g. "%", "units", "₹"
+            description: { type: String },
+        }
+    ],
 }, {timestamps: true, minimize: false})
 
 const Resume = mongoose.model('Resume', ResumeSchema)

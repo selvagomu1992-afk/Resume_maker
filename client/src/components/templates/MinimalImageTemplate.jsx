@@ -118,7 +118,7 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
 
                     {/* Languages */}
                     {data.languages && data.languages.length > 0 && (
-                        <section>
+                        <section className="mb-6">
                             <h2 className="text-sm font-semibold tracking-widest text-zinc-600 mb-3">
                                 LANGUAGES
                             </h2>
@@ -131,6 +131,26 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                                             {lang.write && <span className="px-1.5 py-0.5 rounded" style={{ backgroundColor: accentColor + '20', color: accentColor }}>Write</span>}
                                             {lang.speak && <span className="px-1.5 py-0.5 rounded" style={{ backgroundColor: accentColor + '20', color: accentColor }}>Speak</span>}
                                         </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
+                    {/* Achievements */}
+                    {data.achievements && data.achievements.length > 0 && (
+                        <section>
+                            <h2 className="text-sm font-semibold tracking-widest text-zinc-600 mb-3">
+                                ACHIEVEMENTS
+                            </h2>
+                            <div className="space-y-3">
+                                {data.achievements.map((a, i) => (
+                                    <div key={i} className="border-l-2 pl-3" style={{ borderColor: accentColor }}>
+                                        <p className="text-xs font-semibold" style={{ color: accentColor }}>{a.category}</p>
+                                        <p className="text-sm font-medium text-zinc-800">{a.title}</p>
+                                        {(a.from_value !== '' && a.from_value != null && a.to_value !== '' && a.to_value != null) && (
+                                            <p className="text-xs font-bold" style={{ color: accentColor }}>{a.from_value}{a.unit} → {a.to_value}{a.unit}</p>
+                                        )}
                                     </div>
                                 ))}
                             </div>

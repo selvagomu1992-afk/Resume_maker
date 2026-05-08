@@ -195,6 +195,33 @@ const ClassicTemplate = ({ data, accentColor }) => {
                     </div>
                 </section>
             )}
+
+            {/* Achievements */}
+            {data.achievements && data.achievements.length > 0 && (
+                <section className="mb-6">
+                    <h2 className="text-xl font-semibold mb-4" style={{ color: accentColor }}>
+                        ACHIEVEMENTS
+                    </h2>
+                    <div className="space-y-3">
+                        {data.achievements.map((a, i) => (
+                            <div key={i} className="flex items-start gap-3 p-3 rounded-lg border-l-4" style={{ borderColor: accentColor, backgroundColor: accentColor + '08' }}>
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: accentColor }}>{a.category}</span>
+                                        <span className="text-sm font-semibold text-gray-800">{a.title}</span>
+                                    </div>
+                                    {(a.from_value !== '' && a.from_value != null && a.to_value !== '' && a.to_value != null) && (
+                                        <p className="text-sm font-bold" style={{ color: accentColor }}>
+                                            {a.from_value}{a.unit} → {a.to_value}{a.unit}
+                                        </p>
+                                    )}
+                                    {a.description && <p className="text-xs text-gray-500 mt-0.5">{a.description}</p>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
         </div>
     );
 }

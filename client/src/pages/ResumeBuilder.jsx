@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom'
 //import { dummyResumeData } from '../assets/assets'
-import { ArrowLeftIcon, Briefcase, ChevronLeft, ChevronRight, DownloadIcon, EyeIcon, EyeOffIcon, FileText, FolderIcon, GraduationCap, Languages, Share2Icon, Sparkles, User } from 'lucide-react'
+import { ArrowLeftIcon, Briefcase, ChevronLeft, ChevronRight, DownloadIcon, EyeIcon, EyeOffIcon, FileText, FolderIcon, GraduationCap, Languages, Share2Icon, Sparkles, Trophy, User } from 'lucide-react'
 import PersonalInfoForm from '../components/PersonalInfoForm'
 import ResumePreview from '../components/ResumePreview'
 import TemplateSelector from '../components/TemplateSelector'
@@ -12,6 +12,7 @@ import EducationForm from '../components/EducationForm'
 import ProjectForm from '../components/ProjectForm'
 import SkillsForm from '../components/SkillsForm'
 import LanguageForm from '../components/LanguageForm'
+import AchievementForm from '../components/AchievementForm'
 import { useSelector } from 'react-redux'
 import { toPng } from 'html-to-image'
 import { jsPDF } from 'jspdf'
@@ -40,6 +41,7 @@ const ResumeBuilder = () => {
     project: [],
     skills: [],
     languages: [],
+    achievements: [],
     template: "classic",
     accent_color: "#3B82F6",
     public: false,
@@ -72,6 +74,7 @@ const ResumeBuilder = () => {
     { id: "projects", name: "Projects", icon: FolderIcon },
     { id: "skills", name: "Skills", icon: Sparkles },
     { id: "languages", name: "Languages", icon: Languages },
+    { id: "achievements", name: "Achievements", icon: Trophy },
   ]
 
   const activeSection = sections[activeSectionIndex]
@@ -316,6 +319,9 @@ const ResumeBuilder = () => {
                 )}
                 {activeSection.id === 'languages' && (
                   <LanguageForm data={resumeData.languages} onChange={(data) => setResumeData(prev => ({ ...prev, languages: data }))} />
+                )}
+                {activeSection.id === 'achievements' && (
+                  <AchievementForm data={resumeData.achievements} onChange={(data) => setResumeData(prev => ({ ...prev, achievements: data }))} />
                 )}
 
               </div>
