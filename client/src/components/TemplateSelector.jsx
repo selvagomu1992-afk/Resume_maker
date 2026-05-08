@@ -25,6 +25,16 @@ const TemplateSelector = ({ selectedTemplate, onChange }) => {
             name: "Minimal",
             preview: "Ultra-clean design that puts your content front and center"
         },
+        {
+            id: "creative",
+            name: "Creative",
+            preview: "Bold banner header with a two-column layout — great for standing out"
+        },
+        {
+            id: "timeline",
+            name: "Timeline",
+            preview: "Vertical timeline experience section with a clean right-sidebar accent"
+        },
     ]
   return (
     <div className='relative'>
