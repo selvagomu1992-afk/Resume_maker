@@ -14,9 +14,12 @@ const ModernTemplate = ({ data, accentColor }) => {
 		<div className="max-w-4xl mx-auto bg-white text-gray-800">
 			{/* Header */}
 			<header className="p-8 text-white" style={{ backgroundColor: accentColor }}>
-				<h1 className="text-4xl font-light mb-3">
+				<h1 className="text-4xl font-light mb-1">
 					{data.personal_info?.full_name || "Your Name"}
 				</h1>
+				{data.personal_info?.profession && (
+					<p className="text-base opacity-80 mb-3">{data.personal_info.profession}</p>
+				)}
 
 				<div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm ">
 					{data.personal_info?.email && (
