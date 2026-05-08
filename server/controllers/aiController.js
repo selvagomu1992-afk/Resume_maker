@@ -1,20 +1,25 @@
 import Resume from "../models/Resume.js";
 import ai from "../configs/ai.js";
 
-// Helper: call AI with one retry on 429
-const aiCreate = async (params) => {
-    try {
-        return await ai.chat.completions.create(params)
-    } catch (err) {
-        // Log full error details for debugging
-        console.error('AI error status:', err?.status)
-        console.error('AI error message:', err?.message)
-        console.error('AI error body:', JSON.stringify(err?.error || err?.response?.data || ''))
-        if (err?.status === 429) {
-            await new Promise(r => setTimeout(r, 2000))
-            return await ai.chat.completions.create(params)
+// Helper: call AI with exponential backoff retries on 429
+const aiCreate = async (params, retries = 3) => {
+    const delays = [5000, 15000, 30000]; // 5s, 15s, 30s
+    for (let attempt = 0; attempt <= retries; attempt++) {
+        try {
+            return await ai.chat.completions.create(params);
+        } catch (err) {
+            console.error(`AI error (attempt ${attempt + 1}/${retries + 1}) status:`, err?.status);
+            console.error('AI error message:', err?.message);
+            console.error('AI error body:', JSON.stringify(err?.error || err?.response?.data || ''));
+
+            if (err?.status === 429 && attempt < retries) {
+                const delay = delays[attempt] || 30000;
+                console.log(`Rate limited. Retrying in ${delay / 1000}s...`);
+                await new Promise(r => setTimeout(r, delay));
+                continue;
+            }
+            throw err;
         }
-        throw err
     }
 }
 
@@ -43,7 +48,11 @@ export const enhanceProfessionalSummary = async (req, res) => {
     } catch (error) {
         const errDetail = error?.response?.data || error?.cause || error.message
         console.error('enhance-pro-sum error:', JSON.stringify(errDetail))
-        return res.status(500).json({ message: 'AI enhancement failed: ' + (error?.message || 'Unknown error') })
+        const statusCode = error?.status === 429 ? 429 : 500;
+        const userMsg = error?.status === 429
+            ? 'AI is currently rate limited. Please wait a moment and try again.'
+            : 'AI enhancement failed: ' + (error?.message || 'Unknown error');
+        return res.status(statusCode).json({ message: userMsg })
     }
 }
 
@@ -70,7 +79,11 @@ export const enhanceJobDescription = async (req, res) => {
     } catch (error) {
         const errDetail = error?.response?.data || error?.cause || error.message
         console.error('enhance-job-desc error:', JSON.stringify(errDetail))
-        return res.status(500).json({ message: 'AI enhancement failed: ' + (error?.message || 'Unknown error') })
+        const statusCode = error?.status === 429 ? 429 : 500;
+        const userMsg = error?.status === 429
+            ? 'AI is currently rate limited. Please wait a moment and try again.'
+            : 'AI enhancement failed: ' + (error?.message || 'Unknown error');
+        return res.status(statusCode).json({ message: userMsg })
     }
 }
 
