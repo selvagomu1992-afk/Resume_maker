@@ -286,8 +286,10 @@ const ResumeBuilder = () => {
 
           {/* Right Panel - Preview */}
           <div className='lg:col-span-7 max-lg:mt-6'>
-            {/* Action buttons — row above preview, wraps on mobile */}
-            <div className='flex flex-wrap items-center justify-end gap-2 mb-3'>
+            <ResumePreview data={resumeData} template={resumeData.template} accentColor={resumeData.accent_color} />
+
+            {/* Action buttons — row below preview, wraps on mobile */}
+            <div className='flex flex-wrap items-center justify-end gap-2 mt-3'>
               {/* Share */}
               {(resumeData.public || isPaid) && (
                 <button onClick={handleShare} className='flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-blue-50 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors'>
@@ -314,8 +316,6 @@ const ResumeBuilder = () => {
                 )
               )}
             </div>
-
-            <ResumePreview data={resumeData} template={resumeData.template} accentColor={resumeData.accent_color} />
           </div>
         </div>
       </div>
