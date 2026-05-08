@@ -46,6 +46,14 @@ const ResumeSchema = new mongoose.Schema({
             gpa: { type: String },
         }
     ],
+    languages: [
+        {
+            name: { type: String },
+            read: { type: Boolean, default: false },
+            write: { type: Boolean, default: false },
+            speak: { type: Boolean, default: false },
+        }
+    ],
 }, {timestamps: true, minimize: false})
 
 const Resume = mongoose.model('Resume', ResumeSchema)

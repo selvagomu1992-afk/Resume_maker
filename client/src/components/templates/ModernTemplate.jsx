@@ -176,6 +176,31 @@ const ModernTemplate = ({ data, accentColor }) => {
 						</section>
 					)}
 				</div>
+
+				{/* Languages */}
+				{data.languages && data.languages.length > 0 && (
+					<section className="mt-8">
+						<h2 className="text-2xl font-light mb-4 pb-2 border-b border-gray-200">Languages</h2>
+						<div className="grid grid-cols-4 text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+							<span>Language</span>
+							<span className="text-center">Read</span>
+							<span className="text-center">Write</span>
+							<span className="text-center">Speak</span>
+						</div>
+						{data.languages.map((lang, i) => (
+							<div key={i} className="grid grid-cols-4 items-center py-1.5 border-b border-gray-100 last:border-0">
+								<span className="text-sm text-gray-800 font-medium">{lang.name}</span>
+								{['read', 'write', 'speak'].map(f => (
+									<div key={f} className="flex justify-center">
+										<span className={`w-4 h-4 rounded-sm border-2 ${lang[f] ? '' : 'opacity-20'}`}
+											style={{ borderColor: accentColor, backgroundColor: lang[f] ? accentColor : 'transparent' }}
+										/>
+									</div>
+								))}
+							</div>
+						))}
+					</section>
+				)}
 			</div>
 		</div>
 	);

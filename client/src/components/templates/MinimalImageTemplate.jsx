@@ -92,7 +92,7 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
 
                     {/* Skills */}
                     {data.skills && data.skills.length > 0 && (
-                        <section>
+                        <section className="mb-6">
                             <h2 className="text-sm font-semibold tracking-widest text-zinc-600 mb-3">
                                 SKILLS
                             </h2>
@@ -112,6 +112,27 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                                         </div>
                                     )
                                 })}
+                            </div>
+                        </section>
+                    )}
+
+                    {/* Languages */}
+                    {data.languages && data.languages.length > 0 && (
+                        <section>
+                            <h2 className="text-sm font-semibold tracking-widest text-zinc-600 mb-3">
+                                LANGUAGES
+                            </h2>
+                            <div className="space-y-2">
+                                {data.languages.map((lang, i) => (
+                                    <div key={i} className="text-sm">
+                                        <p className="font-medium text-zinc-700 mb-1">{lang.name}</p>
+                                        <div className="flex gap-2 text-xs text-zinc-500">
+                                            {lang.read && <span className="px-1.5 py-0.5 rounded" style={{ backgroundColor: accentColor + '20', color: accentColor }}>Read</span>}
+                                            {lang.write && <span className="px-1.5 py-0.5 rounded" style={{ backgroundColor: accentColor + '20', color: accentColor }}>Write</span>}
+                                            {lang.speak && <span className="px-1.5 py-0.5 rounded" style={{ backgroundColor: accentColor + '20', color: accentColor }}>Speak</span>}
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </section>
                     )}

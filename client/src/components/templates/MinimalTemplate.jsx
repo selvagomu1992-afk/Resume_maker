@@ -116,7 +116,7 @@ const MinimalTemplate = ({ data, accentColor }) => {
 
             {/* Skills */}
             {data.skills && data.skills.length > 0 && (
-                <section>
+                <section className="mb-10">
                     <h2 className="text-sm uppercase tracking-widest mb-6 font-medium" style={{ color: accentColor }}>
                         Skills
                     </h2>
@@ -137,6 +137,33 @@ const MinimalTemplate = ({ data, accentColor }) => {
                             )
                         })}
                     </div>
+                </section>
+            )}
+
+            {/* Languages */}
+            {data.languages && data.languages.length > 0 && (
+                <section className="mb-10">
+                    <h2 className="text-sm uppercase tracking-widest mb-4 font-medium" style={{ color: accentColor }}>
+                        Languages
+                    </h2>
+                    <div className="grid grid-cols-4 text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+                        <span>Language</span>
+                        <span className="text-center">Read</span>
+                        <span className="text-center">Write</span>
+                        <span className="text-center">Speak</span>
+                    </div>
+                    {data.languages.map((lang, i) => (
+                        <div key={i} className="grid grid-cols-4 items-center py-1.5 border-b border-gray-100 last:border-0">
+                            <span className="text-sm text-gray-800">{lang.name}</span>
+                            {['read', 'write', 'speak'].map(f => (
+                                <div key={f} className="flex justify-center">
+                                    <span className={`w-4 h-4 rounded-sm border-2 ${lang[f] ? '' : 'opacity-20'}`}
+                                        style={{ borderColor: accentColor, backgroundColor: lang[f] ? accentColor : 'transparent' }}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    ))}
                 </section>
             )}
         </div>
