@@ -22,41 +22,17 @@ body {
   }
 }
 
-/* ===== PRINT: show only the resume, hide all builder UI ===== */
+/* ===== PRINT: block direct browser printing — use Download PDF button instead ===== */
 @media print {
-  @page {
-    size: A4;
-    margin: 0;
-  }
-
   body * {
-    visibility: hidden !important;
+    display: none !important;
   }
-
-  #resume-preview,
-  #resume-preview * {
-    visibility: visible !important;
-  }
-
-  #resume-preview {
-    position: fixed !important;
-    inset: 0 !important;
-    width: 100vw !important;
-    height: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
-    background: white !important;
-    overflow: visible !important;
-  }
-
-  #resume-preview > div {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 24px !important;
-    box-shadow: none !important;
-    border: none !important;
+  body::after {
+    display: block !important;
+    content: "Please use the Download PDF button to save your resume.";
+    font-size: 18px;
+    text-align: center;
+    margin-top: 40vh;
+    color: #374151;
   }
 }
