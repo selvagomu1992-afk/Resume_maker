@@ -47,14 +47,14 @@ const TechTemplate = ({ data, accentColor }) => {
         )}
       </aside>
       <main className="w-2/3 p-6 space-y-5">
-        {data.professional_summary && <section><h2 className="text-sm font-bold uppercase tracking-widest mb-2 pb-1 border-b" style={{ color: accentColor, borderColor: accentColor }}>Summary</h2><p className="text-sm text-gray-700 leading-relaxed">{data.professional_summary}</p></section>}
+        {data.professional_summary && <section><h2 className="text-sm font-bold uppercase tracking-widest mb-2 pb-1 border-b" style={{ color: accentColor, borderColor: accentColor }}>Summary</h2><p className="text-sm text-gray-700 leading-relaxed text-center">{data.professional_summary}</p></section>}
         {data.experience && data.experience.length > 0 && (
           <section>
             <h2 className="text-sm font-bold uppercase tracking-widest mb-3 pb-1 border-b" style={{ color: accentColor, borderColor: accentColor }}>Experience</h2>
             <div className="space-y-3">{data.experience.map((exp, i) => (
               <div key={i}>
                 <div className="flex justify-between items-start"><div><h3 className="text-sm font-semibold text-gray-900">{exp.position}</h3><p className="text-xs font-medium" style={{ color: accentColor }}>{exp.company}</p></div><span className="text-xs text-gray-500 shrink-0 ml-2">{formatDate(exp.start_date)} – {exp.is_current ? 'Present' : formatDate(exp.end_date)}</span></div>
-                {exp.description && <p className="text-xs text-gray-600 mt-1 leading-relaxed whitespace-pre-line">{exp.description}</p>}
+                {exp.description && <p className="text-xs text-gray-600 mt-1 leading-relaxed whitespace-pre-line text-center">{exp.description}</p>}
               </div>
             ))}</div>
           </section>

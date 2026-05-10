@@ -144,7 +144,7 @@ const InfographicTemplate = ({ data, accentColor }) => {
                 {data.professional_summary && (
                     <section>
                         <MainLabel label="About Me" color={accentColor} />
-                        <p className="text-sm text-gray-600 leading-relaxed mt-3">
+                        <p className="text-sm text-gray-600 leading-relaxed mt-3 text-center">
                             {data.professional_summary}
                         </p>
                     </section>
@@ -167,7 +167,7 @@ const InfographicTemplate = ({ data, accentColor }) => {
                                         </span>
                                     </div>
                                     {exp.description && (
-                                        <p className="text-xs text-gray-600 mt-2 leading-relaxed whitespace-pre-line">
+                                        <p className="text-xs text-gray-600 mt-2 leading-relaxed whitespace-pre-line text-center">
                                             {exp.description}
                                         </p>
                                     )}

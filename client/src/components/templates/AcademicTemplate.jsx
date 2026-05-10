@@ -25,7 +25,7 @@ const AcademicTemplate = ({ data, accentColor }) => {
       )}
       {data.experience && data.experience.length > 0 && (
         <section className="mb-6"><SD title="Experience" />
-          <div className="space-y-4">{data.experience.map((exp, i) => <div key={i}><div className="flex justify-between items-baseline"><h3 className="font-bold text-gray-900">{exp.position}</h3><span className="text-sm text-gray-500 shrink-0 ml-4">{formatDate(exp.start_date)} – {exp.is_current ? 'Present' : formatDate(exp.end_date)}</span></div><p className="text-sm font-semibold" style={{ color: accentColor }}>{exp.company}</p>{exp.description && <p className="text-sm text-gray-600 mt-1 leading-relaxed whitespace-pre-line">{exp.description}</p>}</div>)}</div>
+          <div className="space-y-4">{data.experience.map((exp, i) => <div key={i}><div className="flex justify-between items-baseline"><h3 className="font-bold text-gray-900">{exp.position}</h3><span className="text-sm text-gray-500 shrink-0 ml-4">{formatDate(exp.start_date)} – {exp.is_current ? 'Present' : formatDate(exp.end_date)}</span></div><p className="text-sm font-semibold" style={{ color: accentColor }}>{exp.company}</p>{exp.description && <p className="text-sm text-gray-600 mt-1 leading-relaxed whitespace-pre-line text-center">{exp.description}</p>}</div>)}</div>
         </section>
       )}
       {data.project && data.project.length > 0 && (
