@@ -115,7 +115,12 @@ export const updateResume = async (req, res) =>{
        delete resumeDataCopy.isPaid;
        delete resumeDataCopy.paidOrderId;
 
-       const resume = await Resume.findOneAndUpdate({userId, _id: resumeId}, resumeDataCopy, {new: true})
+       // Use $set to ensure arrays (skills, languages, etc.) are fully replaced
+       const resume = await Resume.findOneAndUpdate(
+           { userId, _id: resumeId },
+           { $set: resumeDataCopy },
+           { new: true }
+       )
 
        return res.status(200).json({message: 'Saved successfully', resume})
     } catch (error) {

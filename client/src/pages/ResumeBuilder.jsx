@@ -187,11 +187,16 @@ const ResumeBuilder = () => {
       const pdfW = pdf.internal.pageSize.getWidth()   // px
       const pdfH = pdf.internal.pageSize.getHeight()  // px
 
-      // Scale factor: captured image width → PDF page width
-      const scale = pdfW / img.width
+      // Margin in PDF px — adds breathing room at top/bottom of each page
+      const MARGIN = 28  // ~10mm at 96dpi
 
-      // How many px of the captured image fit in one PDF page height
-      const pageHeightInImgPx = Math.floor(pdfH / scale)
+      // Scale factor: captured image width → PDF content width (inside margins)
+      const contentW = pdfW - MARGIN * 2
+      const scale = contentW / img.width
+
+      // How many px of the captured image fit in one page's content area
+      const contentH = pdfH - MARGIN * 2
+      const pageHeightInImgPx = Math.floor(contentH / scale)
 
       const totalPages = Math.ceil(img.height / pageHeightInImgPx)
 
@@ -203,21 +208,27 @@ const ResumeBuilder = () => {
         const srcY = page * pageHeightInImgPx
         const srcH = Math.min(pageHeightInImgPx, img.height - srcY)
 
-        canvas.height = pageHeightInImgPx  // always full page height
+        // Canvas height = content area height (not full page)
+        canvas.height = pageHeightInImgPx
 
-        // Fill white so last page doesn't show bleed
+        // Fill white
         ctx.fillStyle = '#ffffff'
         ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-        // Draw the slice of the image onto the canvas
+        // Draw the slice
         ctx.drawImage(img, 0, srcY, img.width, srcH, 0, 0, img.width, srcH)
 
         const sliceData = canvas.toDataURL('image/png')
 
         if (page > 0) pdf.addPage()
 
-        // Place image at top of page, full width, full page height
-        pdf.addImage(sliceData, 'PNG', 0, 0, pdfW, pdfH)
+        // Fill entire page white first
+        pdf.setFillColor(255, 255, 255)
+        pdf.rect(0, 0, pdfW, pdfH, 'F')
+
+        // Place content with margin on all sides
+        const sliceHeightInPdf = (srcH / img.width) * contentW
+        pdf.addImage(sliceData, 'PNG', MARGIN, MARGIN, contentW, sliceHeightInPdf)
       }
 
       pdf.save(`${resumeData.title || 'resume'}.pdf`)

@@ -158,6 +158,14 @@ export const uploadResume = async (req, res) => {
 
         const extractedData = response.choices[0].message.content;
         const parsedData = JSON.parse(extractedData)
+
+        // Normalise skills — AI may return plain strings, convert to { name, level } objects
+        if (Array.isArray(parsedData.skills)) {
+            parsedData.skills = parsedData.skills.map(s =>
+                typeof s === 'string' ? { name: s, level: 3 } : s
+            )
+        }
+
         const newResume = await Resume.create({userId, title, ...parsedData})
 
         res.json({resumeId: newResume._id})
