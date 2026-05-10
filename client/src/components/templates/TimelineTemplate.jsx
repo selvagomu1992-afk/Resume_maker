@@ -199,6 +199,30 @@ const TimelineTemplate = ({ data, accentColor }) => {
                     </div>
                 )}
 
+                {/* Languages */}
+                {data.languages && data.languages.length > 0 && (
+                    <div>
+                        <p
+                            className="text-[10px] font-bold uppercase tracking-widest mb-3 pb-1 border-b"
+                            style={{ color: accentColor, borderColor: accentColor + "55" }}
+                        >
+                            Languages
+                        </p>
+                        <div className="space-y-1.5">
+                            {data.languages.map((lang, i) => (
+                                <div key={i} className="flex items-center justify-between">
+                                    <span className="text-xs font-medium text-gray-700">{lang.name}</span>
+                                    <div className="flex gap-0.5">
+                                        {lang.read && <span className="text-[10px] px-1 rounded text-white font-bold" style={{ backgroundColor: accentColor }}>R</span>}
+                                        {lang.write && <span className="text-[10px] px-1 rounded text-white font-bold" style={{ backgroundColor: accentColor }}>W</span>}
+                                        {lang.speak && <span className="text-[10px] px-1 rounded text-white font-bold" style={{ backgroundColor: accentColor }}>S</span>}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* Education */}
                 {data.education && data.education.length > 0 && (
                     <div>
