@@ -5,17 +5,17 @@ const BoldTemplate = ({ data, accentColor }) => {
   const SH = ({ children }) => <h2 className="text-sm font-black uppercase tracking-widest mb-3 pl-3 border-l-4 py-1" style={{ color: accentColor, borderColor: accentColor }}>{children}</h2>;
   return (
     <div className="max-w-4xl mx-auto bg-white text-gray-800">
-      <header className="text-white px-8 py-8" style={{ backgroundColor: accentColor }}>
+      <header className="text-white px-8 py-8 text-center" style={{ backgroundColor: accentColor }}>
         <h1 className="text-4xl font-black tracking-tight">{pi.full_name || 'Your Name'}</h1>
         {pi.profession && <p className="text-lg font-light mt-1 opacity-85">{pi.profession}</p>}
       </header>
       <div className="px-8 py-3 bg-gray-50 border-b border-gray-200">
-        <div className="grid grid-cols-3 gap-3 text-xs text-gray-600">
+        <div className="flex flex-wrap justify-center gap-4 text-xs text-gray-600">
           {pi.email && <span className="flex items-center gap-1.5"><Mail className="size-3.5 shrink-0" style={{ color: accentColor }} />{pi.email}</span>}
           {pi.phone && <span className="flex items-center gap-1.5"><Phone className="size-3.5 shrink-0" style={{ color: accentColor }} />{pi.phone}</span>}
           {pi.location && <span className="flex items-center gap-1.5"><MapPin className="size-3.5 shrink-0" style={{ color: accentColor }} />{pi.location}</span>}
-          {pi.linkedin && <span className="flex items-center gap-1.5 col-span-1"><Linkedin className="size-3.5 shrink-0" style={{ color: accentColor }} /><span className="truncate">{pi.linkedin}</span></span>}
-          {pi.website && <span className="flex items-center gap-1.5 col-span-1"><Globe className="size-3.5 shrink-0" style={{ color: accentColor }} /><span className="truncate">{pi.website}</span></span>}
+          {pi.linkedin && <span className="flex items-center gap-1.5"><Linkedin className="size-3.5 shrink-0" style={{ color: accentColor }} /><span className="truncate">{pi.linkedin}</span></span>}
+          {pi.website && <span className="flex items-center gap-1.5"><Globe className="size-3.5 shrink-0" style={{ color: accentColor }} /><span className="truncate">{pi.website}</span></span>}
         </div>
       </div>
       <div className="px-8 py-6 space-y-5">

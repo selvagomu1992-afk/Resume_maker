@@ -20,10 +20,10 @@ const StripTemplate = ({ data, accentColor }) => {
   };
   return (
     <div className="max-w-4xl mx-auto bg-white text-gray-800">
-      <header className="px-8 py-6" style={{ backgroundColor: accentColor }}>
+      <header className="px-8 py-6 text-center" style={{ backgroundColor: accentColor }}>
         <h1 className="text-3xl font-bold text-white">{pi.full_name || 'Your Name'}</h1>
         {pi.profession && <p className="text-base text-white opacity-80 mt-1">{pi.profession}</p>}
-        <div className="flex flex-wrap gap-4 mt-3 text-sm text-white opacity-90">
+        <div className="flex flex-wrap justify-center gap-4 mt-3 text-sm text-white opacity-90">
           {pi.email && <span className="flex items-center gap-1.5"><Mail className="size-3.5" />{pi.email}</span>}
           {pi.phone && <span className="flex items-center gap-1.5"><Phone className="size-3.5" />{pi.phone}</span>}
           {pi.location && <span className="flex items-center gap-1.5"><MapPin className="size-3.5" />{pi.location}</span>}

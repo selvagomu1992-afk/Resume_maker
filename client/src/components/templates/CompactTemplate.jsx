@@ -4,15 +4,15 @@ const CompactTemplate = ({ data, accentColor }) => {
   const pi = data.personal_info || {};
   return (
     <div className="max-w-4xl mx-auto bg-white text-gray-800 p-5 text-xs leading-snug">
-      <header className="mb-3 pb-2 border-b-2" style={{ borderColor: accentColor }}>
-        <div className="flex justify-between items-start">
-          <div><h1 className="text-xl font-bold text-gray-900">{pi.full_name || 'Your Name'}</h1>{pi.profession && <p className="text-sm font-medium" style={{ color: accentColor }}>{pi.profession}</p>}</div>
-          <div className="text-right text-xs text-gray-500 space-y-0.5">
-            {pi.email && <div className="flex items-center justify-end gap-1"><Mail className="size-3" />{pi.email}</div>}
-            {pi.phone && <div className="flex items-center justify-end gap-1"><Phone className="size-3" />{pi.phone}</div>}
-            {pi.location && <div className="flex items-center justify-end gap-1"><MapPin className="size-3" />{pi.location}</div>}
-            {pi.linkedin && <div className="flex items-center justify-end gap-1"><Linkedin className="size-3" /><span className="truncate max-w-[140px]">{pi.linkedin}</span></div>}
-          </div>
+      <header className="mb-3 pb-2 border-b-2 text-center" style={{ borderColor: accentColor }}>
+        <h1 className="text-xl font-bold text-gray-900">{pi.full_name || 'Your Name'}</h1>
+        {pi.profession && <p className="text-sm font-medium" style={{ color: accentColor }}>{pi.profession}</p>}
+        <div className="flex flex-wrap justify-center gap-3 mt-1 text-xs text-gray-500">
+          {pi.email && <div className="flex items-center gap-1"><Mail className="size-3" />{pi.email}</div>}
+          {pi.phone && <div className="flex items-center gap-1"><Phone className="size-3" />{pi.phone}</div>}
+          {pi.location && <div className="flex items-center gap-1"><MapPin className="size-3" />{pi.location}</div>}
+          {pi.linkedin && <div className="flex items-center gap-1"><Linkedin className="size-3" /><span className="truncate max-w-[140px]">{pi.linkedin}</span></div>}
+          {pi.website && <div className="flex items-center gap-1"><Globe className="size-3" /><span className="truncate max-w-[140px]">{pi.website}</span></div>}
         </div>
       </header>
       {data.professional_summary && <section className="mb-3"><h2 className="text-sm font-bold uppercase tracking-wide mb-1" style={{ color: accentColor }}>Summary</h2><p className="text-xs text-gray-600 leading-relaxed">{data.professional_summary}</p></section>}

@@ -6,7 +6,7 @@ const TechTemplate = ({ data, accentColor }) => {
   return (
     <div className="max-w-4xl mx-auto bg-white text-gray-800 flex">
       <aside className="w-1/3 text-white p-6 flex flex-col gap-5" style={{ backgroundColor: '#1e293b' }}>
-        <div>
+        <div className="text-center">
           <h1 className="text-xl font-bold leading-tight">{pi.full_name || 'Your Name'}</h1>
           {pi.profession && <p className="text-sm mt-1 opacity-70">{pi.profession}</p>}
         </div>

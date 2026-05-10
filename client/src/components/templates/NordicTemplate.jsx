@@ -4,11 +4,11 @@ const NordicTemplate = ({ data, accentColor }) => {
   const pi = data.personal_info || {};
   return (
     <div className="max-w-4xl mx-auto bg-white text-gray-800 px-12 py-10">
-      <header className="mb-8">
+      <header className="mb-8 text-center">
         <h1 className="text-5xl font-thin tracking-tight text-gray-900 leading-none">{pi.full_name || 'Your Name'}</h1>
         {pi.profession && <p className="text-lg font-light text-gray-400 mt-2">{pi.profession}</p>}
         <div className="h-px mt-4 mb-4" style={{ backgroundColor: accentColor }} />
-        <div className="flex flex-wrap gap-5 text-sm text-gray-500 font-light">
+        <div className="flex flex-wrap justify-center gap-5 text-sm text-gray-500 font-light">
           {pi.email && <span className="flex items-center gap-1.5"><Mail className="size-3.5" />{pi.email}</span>}
           {pi.phone && <span className="flex items-center gap-1.5"><Phone className="size-3.5" />{pi.phone}</span>}
           {pi.location && <span className="flex items-center gap-1.5"><MapPin className="size-3.5" />{pi.location}</span>}

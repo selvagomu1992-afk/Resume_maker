@@ -5,10 +5,10 @@ const ProfessionalTemplate = ({ data, accentColor }) => {
   return (
     <div className="max-w-4xl mx-auto bg-white text-gray-800">
       <div className="h-1.5 w-full" style={{ backgroundColor: accentColor }} />
-      <header className="px-8 pt-6 pb-4">
+      <header className="px-8 pt-6 pb-4 text-center">
         <h1 className="text-4xl font-bold text-gray-900">{pi.full_name || 'Your Name'}</h1>
         {pi.profession && <p className="text-lg mt-1" style={{ color: accentColor }}>{pi.profession}</p>}
-        <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-600">
+        <div className="flex flex-wrap justify-center gap-4 mt-3 text-sm text-gray-600">
           {pi.email && <span className="flex items-center gap-1"><Mail className="size-3.5" />{pi.email}</span>}
           {pi.phone && <span className="flex items-center gap-1"><Phone className="size-3.5" />{pi.phone}</span>}
           {pi.location && <span className="flex items-center gap-1"><MapPin className="size-3.5" />{pi.location}</span>}
