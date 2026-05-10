@@ -214,6 +214,25 @@ const ElegantTemplate = ({ data, accentColor }) => {
                             </div>
                         </div>
                     )}
+
+                    {/* Languages */}
+                    {data.languages && data.languages.length > 0 && (
+                        <div>
+                            <ElegantLabel label="Languages" color={accentColor} />
+                            <div className="mt-4 space-y-2">
+                                {data.languages.map((lang, i) => (
+                                    <div key={i} className="flex items-center justify-between">
+                                        <span className="text-xs text-gray-700 font-medium">{lang.name}</span>
+                                        <div className="flex gap-1">
+                                            {lang.read && <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold text-white" style={{ backgroundColor: accentColor }}>R</span>}
+                                            {lang.write && <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold text-white" style={{ backgroundColor: accentColor }}>W</span>}
+                                            {lang.speak && <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold text-white" style={{ backgroundColor: accentColor }}>S</span>}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </aside>
             </div>
 
