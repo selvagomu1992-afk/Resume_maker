@@ -149,89 +149,83 @@ const ResumeBuilder = () => {
 
     const toastId = toast.loading('Generating PDF...')
     try {
-      // A4 at 96dpi = 794px wide
-      const A4_WIDTH = 794
+      const A4_WIDTH_PX = 794   // A4 at 96dpi
+      const PIXEL_RATIO = 2     // 2x for crisp quality
 
-      // Save original styles
-      const originalWidth = element.style.width
-      const originalMinWidth = element.style.minWidth
-      const originalTransform = element.style.transform
-      const originalTransformOrigin = element.style.transformOrigin
-      const originalOverflow = element.style.overflow
-
-      // Force A4 width so mobile doesn't capture narrow layout
-      element.style.width = `${A4_WIDTH}px`
-      element.style.minWidth = `${A4_WIDTH}px`
+      // Save and force A4 width for consistent capture on all screen sizes
+      const orig = {
+        width: element.style.width,
+        minWidth: element.style.minWidth,
+        transform: element.style.transform,
+        overflow: element.style.overflow,
+      }
+      element.style.width = `${A4_WIDTH_PX}px`
+      element.style.minWidth = `${A4_WIDTH_PX}px`
       element.style.transform = 'none'
-      element.style.transformOrigin = 'top left'
       element.style.overflow = 'visible'
 
-      // Wait for reflow
-      await new Promise(r => setTimeout(r, 100))
+      await new Promise(r => setTimeout(r, 150))
 
       const dataUrl = await toPng(element, {
         quality: 1,
-        pixelRatio: 2,
+        pixelRatio: PIXEL_RATIO,
         backgroundColor: '#ffffff',
-        width: A4_WIDTH,
+        width: A4_WIDTH_PX,
       })
 
-      // Restore original styles
-      element.style.width = originalWidth
-      element.style.minWidth = originalMinWidth
-      element.style.transform = originalTransform
-      element.style.transformOrigin = originalTransformOrigin
-      element.style.overflow = originalOverflow
+      // Restore styles
+      element.style.width = orig.width
+      element.style.minWidth = orig.minWidth
+      element.style.transform = orig.transform
+      element.style.overflow = orig.overflow
 
       const img = new Image()
       img.src = dataUrl
       await new Promise(resolve => { img.onload = resolve })
 
-      // A4 in mm: 210 x 297
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-      const pageW = pdf.internal.pageSize.getWidth()   // 210mm
-      const pageH = pdf.internal.pageSize.getHeight()  // 297mm
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: 'a4', hotfixes: ['px_scaling'] })
+      const pdfW = pdf.internal.pageSize.getWidth()   // px
+      const pdfH = pdf.internal.pageSize.getHeight()  // px
 
-      const imgAspect = img.height / img.width
-      const imgH = pageW * imgAspect
+      // Scale factor: captured image width → PDF page width
+      const scale = pdfW / img.width
 
-      if (imgH <= pageH) {
-        // Fits on one page
-        pdf.addImage(dataUrl, 'PNG', 0, 0, pageW, imgH)
-      } else {
-        // Multi-page: slice across A4 pages
-        const canvas = document.createElement('canvas')
-        const ctx = canvas.getContext('2d')
-        const sliceH = Math.floor((pageH / imgH) * img.height)
-        canvas.width = img.width
-        let yOffset = 0
-        let first = true
+      // How many px of the captured image fit in one PDF page height
+      const pageHeightInImgPx = Math.floor(pdfH / scale)
 
-        while (yOffset < img.height) {
-          const h = Math.min(sliceH, img.height - yOffset)
-          canvas.height = h
-          ctx.clearRect(0, 0, canvas.width, h)
-          ctx.drawImage(img, 0, yOffset, img.width, h, 0, 0, img.width, h)
-          const slice = canvas.toDataURL('image/png')
-          if (!first) pdf.addPage()
-          pdf.addImage(slice, 'PNG', 0, 0, pageW, (h / img.width) * pageW)
-          yOffset += h
-          first = false
-        }
+      const totalPages = Math.ceil(img.height / pageHeightInImgPx)
+
+      const canvas = document.createElement('canvas')
+      canvas.width = img.width
+      const ctx = canvas.getContext('2d')
+
+      for (let page = 0; page < totalPages; page++) {
+        const srcY = page * pageHeightInImgPx
+        const srcH = Math.min(pageHeightInImgPx, img.height - srcY)
+
+        canvas.height = pageHeightInImgPx  // always full page height
+
+        // Fill white so last page doesn't show bleed
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+        // Draw the slice of the image onto the canvas
+        ctx.drawImage(img, 0, srcY, img.width, srcH, 0, 0, img.width, srcH)
+
+        const sliceData = canvas.toDataURL('image/png')
+
+        if (page > 0) pdf.addPage()
+
+        // Place image at top of page, full width, full page height
+        pdf.addImage(sliceData, 'PNG', 0, 0, pdfW, pdfH)
       }
 
       pdf.save(`${resumeData.title || 'resume'}.pdf`)
       toast.success('PDF downloaded!', { id: toastId })
     } catch (err) {
       console.error('PDF generation failed:', err)
-      // Restore styles on error too
-      const element = document.getElementById('resume-preview')
-      if (element) {
-        element.style.width = ''
-        element.style.minWidth = ''
-        element.style.transform = ''
-        element.style.overflow = ''
-      }
+      const el = document.getElementById('resume-preview')
+      if (el) { el.style.width = ''; el.style.minWidth = ''; el.style.transform = ''; el.style.overflow = '' }
       toast.error('Failed: ' + err.message, { id: toastId })
     }
   }
