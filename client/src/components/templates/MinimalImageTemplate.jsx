@@ -152,6 +152,26 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                             </div>
                         </section>
                     )}
+
+                    {/* Additional Information */}
+                    {data.additional_info && data.additional_info.length > 0 && (
+                        <section>
+                            <h2 className="text-sm font-semibold tracking-widest text-zinc-600 mb-3">
+                                ADDITIONAL INFO
+                            </h2>
+                            <div className="space-y-2">
+                                {data.additional_info.map((item, i) => (
+                                    <div key={i} className="border-l-2 pl-3" style={{ borderColor: accentColor }}>
+                                        <p className="text-xs font-semibold" style={{ color: accentColor }}>{item.category}</p>
+                                        <p className="text-xs font-medium text-zinc-800">{item.title}</p>
+                                        {item.date && <p className="text-xs text-zinc-400">{item.date}</p>}
+                                        {item.subtitle && <p className="text-xs text-zinc-500">{item.subtitle}</p>}
+                                        {item.description && <p className="text-xs text-zinc-500">{item.description}</p>}
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )}
                 </aside>
 
                 {/* Right Content */}

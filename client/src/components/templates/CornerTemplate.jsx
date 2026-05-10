@@ -34,6 +34,24 @@ const CornerTemplate = ({ data, accentColor }) => {
           {data.experience && data.experience.length > 0 && <div><h2 className="text-xs font-bold uppercase tracking-widest mb-2 pb-1 border-b" style={{ color: accentColor, borderColor: accentColor }}>Experience</h2><div className="space-y-3">{data.experience.map((exp, i) => <div key={i}><div className="flex justify-between items-baseline"><h3 className="text-sm font-bold text-gray-900">{exp.position}</h3><span className="text-xs text-gray-400 shrink-0 ml-2">{formatDate(exp.start_date)} – {exp.is_current ? 'Present' : formatDate(exp.end_date)}</span></div><p className="text-xs font-semibold" style={{ color: accentColor }}>{exp.company}</p>{exp.description && <p className="text-xs text-gray-600 mt-1 leading-relaxed whitespace-pre-line text-justify">{exp.description}</p>}</div>)}</div></div>}
           {data.project && data.project.length > 0 && <div><h2 className="text-xs font-bold uppercase tracking-widest mb-2 pb-1 border-b" style={{ color: accentColor, borderColor: accentColor }}>Projects</h2><div className="space-y-2">{data.project.map((proj, i) => <div key={i}><div className="flex items-center gap-2"><div className="w-1.5 h-1.5 rotate-45 shrink-0" style={{ backgroundColor: accentColor }} /><h3 className="text-sm font-bold text-gray-900">{proj.name}</h3>{proj.type && <span className="text-xs text-gray-400">({proj.type})</span>}</div>{proj.description && <p className="text-xs text-gray-600 ml-3.5">{proj.description}</p>}</div>)}</div></div>}
           {data.achievements && data.achievements.length > 0 && <div><h2 className="text-xs font-bold uppercase tracking-widest mb-2 pb-1 border-b" style={{ color: accentColor, borderColor: accentColor }}>Achievements</h2><div className="space-y-2">{data.achievements.map((a, i) => <div key={i} className="flex items-start gap-2"><div className="w-1.5 h-1.5 rotate-45 shrink-0 mt-1.5" style={{ backgroundColor: accentColor }} /><div><div className="flex items-center gap-1.5"><span className="text-xs font-bold" style={{ color: accentColor }}>{a.category}</span><span className="text-xs font-semibold text-gray-800">{a.title}</span></div>{a.from_value != null && a.from_value !== '' && a.to_value != null && a.to_value !== '' && <p className="text-xs font-bold" style={{ color: accentColor }}>{a.from_value}{a.unit} → {a.to_value}{a.unit}</p>}{a.description && <p className="text-xs text-gray-500">{a.description}</p>}</div></div>)}</div></div>}
+          {data.additional_info && data.additional_info.length > 0 && (
+            <div>
+              <h2 className="text-xs font-bold uppercase tracking-widest mb-2 pb-1 border-b" style={{ color: accentColor, borderColor: accentColor }}>Additional Information</h2>
+              <div className="grid grid-cols-2 gap-2">
+                {data.additional_info.map((item, i) => (
+                  <div key={i} className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-xs font-bold" style={{ color: accentColor }}>{item.category}</span>
+                      <span className="text-xs font-semibold text-gray-800">{item.title}</span>
+                      {item.date && <span className="text-xs text-gray-400">{item.date}</span>}
+                    </div>
+                    {item.subtitle && <p className="text-xs text-gray-500">{item.subtitle}</p>}
+                    {item.description && <p className="text-xs text-gray-500">{item.description}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

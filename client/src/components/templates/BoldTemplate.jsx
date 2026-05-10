@@ -58,6 +58,23 @@ const BoldTemplate = ({ data, accentColor }) => {
             ))}</div>
           </section>
         )}
+        {data.additional_info && data.additional_info.length > 0 && (
+          <section><SH>Additional Information</SH>
+            <div className="grid grid-cols-2 gap-3">
+              {data.additional_info.map((item, i) => (
+                <div key={i} className="flex flex-col gap-0.5">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs font-semibold" style={{ color: accentColor }}>{item.category}</span>
+                    <span className="text-sm font-medium text-gray-800">{item.title}</span>
+                    {item.date && <span className="text-xs text-gray-400">{item.date}</span>}
+                  </div>
+                  {item.subtitle && <p className="text-xs text-gray-500">{item.subtitle}</p>}
+                  {item.description && <p className="text-xs text-gray-500">{item.description}</p>}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

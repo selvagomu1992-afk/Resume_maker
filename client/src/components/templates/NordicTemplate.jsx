@@ -50,6 +50,24 @@ const NordicTemplate = ({ data, accentColor }) => {
           <div className="space-y-4">{data.achievements.map((a, i) => <div key={i} className="flex gap-8"><div className="w-28 shrink-0 text-xs text-gray-400 font-light pt-0.5 text-right">{a.category}</div><div className="flex-1"><h3 className="font-semibold text-gray-900">{a.title}</h3>{a.from_value != null && a.from_value !== '' && a.to_value != null && a.to_value !== '' && <p className="text-sm font-semibold" style={{ color: accentColor }}>{a.from_value}{a.unit} → {a.to_value}{a.unit}</p>}{a.description && <p className="text-sm font-light text-gray-600 mt-0.5">{a.description}</p>}</div></div>)}</div>
         </section>
       )}
+      {data.additional_info && data.additional_info.length > 0 && (
+        <section className="mb-10">
+          <h2 className="text-xs font-bold uppercase tracking-widest mb-6" style={{ color: accentColor }}>Additional Information</h2>
+          <div className="grid grid-cols-2 gap-3">
+            {data.additional_info.map((item, i) => (
+              <div key={i} className="flex flex-col gap-0.5">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-semibold" style={{ color: accentColor }}>{item.category}</span>
+                  <span className="text-sm font-medium text-gray-800">{item.title}</span>
+                  {item.date && <span className="text-xs text-gray-400">{item.date}</span>}
+                </div>
+                {item.subtitle && <p className="text-xs text-gray-500">{item.subtitle}</p>}
+                {item.description && <p className="text-xs text-gray-500">{item.description}</p>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 };

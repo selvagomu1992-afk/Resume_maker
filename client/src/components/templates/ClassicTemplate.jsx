@@ -199,25 +199,63 @@ const ClassicTemplate = ({ data, accentColor }) => {
 
             {/* Achievements */}
             {data.achievements && data.achievements.length > 0 && (
-                <section className="mb-6">
-                    <h2 className="text-xl font-semibold mb-4" style={{ color: accentColor }}>
-                        ACHIEVEMENTS
-                    </h2>
-                    <div className="space-y-3">
+                <section className="mb-4">
+                    <h2 className="text-base font-semibold mb-2" style={{ color: accentColor }}>ACHIEVEMENTS</h2>
+                    <div className="space-y-2">
                         {data.achievements.map((a, i) => (
-                            <div key={i} className="flex items-start gap-3 p-3 rounded-lg border-l-4" style={{ borderColor: accentColor, backgroundColor: accentColor + '08' }}>
+                            <div key={i} className="flex items-start gap-3 p-2 rounded-lg border-l-4" style={{ borderColor: accentColor, backgroundColor: accentColor + '08' }}>
                                 <div className="flex-1">
-                                    <div className="flex items-center gap-2 flex-wrap mb-1">
-                                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: accentColor }}>{a.category}</span>
+                                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                                        <span className="text-xs font-semibold px-1.5 py-0.5 rounded-full text-white" style={{ backgroundColor: accentColor }}>{a.category}</span>
                                         <span className="text-sm font-semibold text-gray-800">{a.title}</span>
                                     </div>
                                     {(a.from_value !== '' && a.from_value != null && a.to_value !== '' && a.to_value != null) && (
-                                        <p className="text-sm font-bold" style={{ color: accentColor }}>
-                                            {a.from_value}{a.unit} → {a.to_value}{a.unit}
-                                        </p>
+                                        <p className="text-sm font-bold" style={{ color: accentColor }}>{a.from_value}{a.unit} → {a.to_value}{a.unit}</p>
                                     )}
                                     {a.description && <p className="text-xs text-gray-500 mt-0.5">{a.description}</p>}
                                 </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* Additional Information */}
+            {data.additional_info && data.additional_info.length > 0 && (
+                <section className="mb-4">
+                    <h2 className="text-base font-semibold mb-2" style={{ color: accentColor }}>ADDITIONAL INFORMATION</h2>
+                    <div className="grid grid-cols-2 gap-3">
+                        {data.additional_info.map((item, i) => (
+                            <div key={i} className="flex flex-col gap-0.5 p-2 rounded border border-gray-100">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="text-xs font-semibold" style={{ color: accentColor }}>{item.category}</span>
+                                    <span className="text-sm font-medium text-gray-800">{item.title}</span>
+                                    {item.date && <span className="text-xs text-gray-400">{item.date}</span>}
+                                </div>
+                                {item.subtitle && <p className="text-xs text-gray-500">{item.subtitle}</p>}
+                                {item.description && <p className="text-xs text-gray-500">{item.description}</p>}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* Additional Information */}
+            {data.additional_info && data.additional_info.length > 0 && (
+                <section className="mb-6">
+                    <h2 className="text-xl font-semibold mb-4" style={{ color: accentColor }}>
+                        ADDITIONAL INFORMATION
+                    </h2>
+                    <div className="grid grid-cols-2 gap-3">
+                        {data.additional_info.map((item, i) => (
+                            <div key={i} className="flex flex-col gap-0.5">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="text-xs font-semibold" style={{ color: accentColor }}>{item.category}</span>
+                                    <span className="text-sm font-medium text-gray-800">{item.title}</span>
+                                    {item.date && <span className="text-xs text-gray-400">{item.date}</span>}
+                                </div>
+                                {item.subtitle && <p className="text-xs text-gray-500">{item.subtitle}</p>}
+                                {item.description && <p className="text-xs text-gray-500">{item.description}</p>}
                             </div>
                         ))}
                     </div>

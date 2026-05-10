@@ -9,6 +9,7 @@ const StripTemplate = ({ data, accentColor }) => {
   if (data.project?.length > 0) sections.push({ id: 'projects', title: 'Projects' });
   if (data.skills?.length > 0 || data.languages?.length > 0) sections.push({ id: 'skills', title: 'Skills & Languages' });
   if (data.achievements?.length > 0) sections.push({ id: 'achievements', title: 'Achievements' });
+  if (data.additional_info?.length > 0) sections.push({ id: 'additional', title: 'Additional Information' });
   const renderContent = (id) => {
     if (id === 'summary') return <p className="text-sm text-gray-700 leading-relaxed text-justify">{data.professional_summary}</p>;
     if (id === 'experience') return <div className="space-y-4">{data.experience.map((exp, i) => <div key={i}><div className="flex justify-between items-baseline"><h3 className="font-bold text-gray-900">{exp.position}</h3><span className="text-xs text-gray-500 shrink-0 ml-2">{formatDate(exp.start_date)} – {exp.is_current ? 'Present' : formatDate(exp.end_date)}</span></div><p className="text-sm font-semibold" style={{ color: accentColor }}>{exp.company}</p>{exp.description && <p className="text-sm text-gray-600 mt-1 leading-relaxed whitespace-pre-line text-justify">{exp.description}</p>}</div>)}</div>;
@@ -16,6 +17,21 @@ const StripTemplate = ({ data, accentColor }) => {
     if (id === 'projects') return <div className="space-y-3">{data.project.map((proj, i) => <div key={i}><div className="flex items-center gap-2"><h3 className="font-bold text-gray-900">{proj.name}</h3>{proj.type && <span className="text-xs px-2 py-0.5 rounded-full text-white font-medium" style={{ backgroundColor: accentColor }}>{proj.type}</span>}</div>{proj.description && <p className="text-sm text-gray-600 mt-0.5">{proj.description}</p>}</div>)}</div>;
     if (id === 'skills') return <div className="grid grid-cols-2 gap-6">{data.skills?.length > 0 && <div><h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Skills</h3><div className="flex flex-wrap gap-2">{data.skills.map((skill, i) => { const s = typeof skill === 'string' ? { name: skill, level: 3 } : skill; return <div key={i} className="flex items-center gap-1.5 bg-white rounded px-2 py-1 border text-xs"><span className="text-gray-700">{s.name}</span><div className="flex gap-0.5">{[1,2,3,4,5].map(d => <span key={d} className="w-2.5 h-2.5 rounded-sm border inline-block" style={{ borderColor: accentColor, backgroundColor: d <= (s.level ?? 3) ? accentColor : 'transparent' }} />)}</div></div>; })}</div></div>}{data.languages?.length > 0 && <div><h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Languages</h3><div className="grid grid-cols-4 text-xs font-bold text-gray-400 uppercase mb-1"><span>Lang</span><span className="text-center">R</span><span className="text-center">W</span><span className="text-center">S</span></div>{data.languages.map((lang, i) => <div key={i} className="grid grid-cols-4 items-center py-1 border-b border-gray-200 last:border-0"><span className="text-xs font-medium truncate">{lang.name}</span>{['read','write','speak'].map(f => <div key={f} className="flex justify-center"><span className="w-3 h-3 rounded-sm border inline-block" style={{ borderColor: accentColor, backgroundColor: lang[f] ? accentColor : 'transparent', opacity: lang[f] ? 1 : 0.25 }} /></div>)}</div>)}</div>}</div>;
     if (id === 'achievements') return <div className="space-y-3">{data.achievements.map((a, i) => <div key={i} className="flex items-start gap-3 p-3 rounded-lg border-l-4 bg-white" style={{ borderColor: accentColor }}><div className="flex-1"><div className="flex items-center gap-2 flex-wrap mb-1"><span className="text-xs font-bold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: accentColor }}>{a.category}</span><span className="text-sm font-semibold text-gray-800">{a.title}</span></div>{a.from_value != null && a.from_value !== '' && a.to_value != null && a.to_value !== '' && <p className="text-sm font-bold" style={{ color: accentColor }}>{a.from_value}{a.unit} → {a.to_value}{a.unit}</p>}{a.description && <p className="text-xs text-gray-500 mt-0.5">{a.description}</p>}</div></div>)}</div>;
+    if (id === 'additional') return (
+      <div className="grid grid-cols-2 gap-3">
+        {data.additional_info.map((item, i) => (
+          <div key={i} className="flex flex-col gap-0.5">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-semibold" style={{ color: accentColor }}>{item.category}</span>
+              <span className="text-sm font-medium text-gray-800">{item.title}</span>
+              {item.date && <span className="text-xs text-gray-400">{item.date}</span>}
+            </div>
+            {item.subtitle && <p className="text-xs text-gray-500">{item.subtitle}</p>}
+            {item.description && <p className="text-xs text-gray-500">{item.description}</p>}
+          </div>
+        ))}
+      </div>
+    );
     return null;
   };
   return (

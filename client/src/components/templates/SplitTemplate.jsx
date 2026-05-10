@@ -59,6 +59,24 @@ const SplitTemplate = ({ data, accentColor }) => {
             <div className="space-y-2">{data.achievements.map((a, i) => <div key={i} className="p-2 rounded border-l-4 text-xs" style={{ borderColor: accentColor, backgroundColor: accentColor + '0d' }}><div className="flex items-center gap-2 mb-0.5"><span className="font-bold text-white px-1.5 py-0.5 rounded" style={{ backgroundColor: accentColor }}>{a.category}</span><span className="font-semibold text-gray-800">{a.title}</span></div>{a.from_value != null && a.from_value !== '' && a.to_value != null && a.to_value !== '' && <p className="font-bold" style={{ color: accentColor }}>{a.from_value}{a.unit} → {a.to_value}{a.unit}</p>}{a.description && <p className="text-gray-500">{a.description}</p>}</div>)}</div>
           </section>
         )}
+        {data.additional_info && data.additional_info.length > 0 && (
+          <section>
+            <h2 className="text-sm font-bold uppercase tracking-widest mb-3 pb-1 border-b border-gray-200" style={{ color: accentColor }}>Additional Information</h2>
+            <div className="space-y-2">
+              {data.additional_info.map((item, i) => (
+                <div key={i} className="text-xs flex flex-col gap-0.5">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-bold" style={{ color: accentColor }}>{item.category}</span>
+                    <span className="font-semibold text-gray-800">{item.title}</span>
+                    {item.date && <span className="text-gray-400">{item.date}</span>}
+                  </div>
+                  {item.subtitle && <p className="text-gray-500">{item.subtitle}</p>}
+                  {item.description && <p className="text-gray-500">{item.description}</p>}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );

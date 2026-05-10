@@ -139,6 +139,26 @@ const ElegantTemplate = ({ data, accentColor }) => {
                             </div>
                         </section>
                     )}
+
+                    {/* Additional Information */}
+                    {data.additional_info && data.additional_info.length > 0 && (
+                        <section>
+                            <ElegantLabel label="Additional Information" color={accentColor} />
+                            <div className="mt-4 space-y-2">
+                                {data.additional_info.map((item, i) => (
+                                    <div key={i} className="text-xs flex flex-col gap-0.5">
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <span className="font-bold" style={{ color: accentColor }}>{item.category}</span>
+                                            <span className="font-semibold text-gray-800">{item.title}</span>
+                                            {item.date && <span className="text-gray-400">{item.date}</span>}
+                                        </div>
+                                        {item.subtitle && <p className="text-gray-500">{item.subtitle}</p>}
+                                        {item.description && <p className="text-gray-500">{item.description}</p>}
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )}
                 </main>
 
                 {/* RIGHT — skills + education */}

@@ -21,6 +21,24 @@ const CardTemplate = ({ data, accentColor }) => {
           {data.experience && data.experience.length > 0 && <div><h2 className="text-sm font-bold uppercase tracking-widest mb-2" style={{ color: accentColor }}>Experience</h2><div className="space-y-3">{data.experience.map((exp, i) => <div key={i} className="shadow-sm border rounded-lg p-3 bg-white"><div className="flex justify-between items-start mb-1"><h3 className="font-bold text-sm text-gray-900">{exp.position}</h3><span className="text-xs text-gray-400 shrink-0 ml-1">{formatDate(exp.start_date)} – {exp.is_current ? 'Present' : formatDate(exp.end_date)}</span></div><p className="text-xs font-semibold mb-1" style={{ color: accentColor }}>{exp.company}</p>{exp.description && <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-line text-justify">{exp.description}</p>}</div>)}</div></div>}
           {data.project && data.project.length > 0 && <div><h2 className="text-sm font-bold uppercase tracking-widest mb-2" style={{ color: accentColor }}>Projects</h2><div className="space-y-2">{data.project.map((proj, i) => <div key={i} className="shadow-sm border rounded-lg p-3 bg-white"><div className="flex items-center gap-2 mb-1"><h3 className="font-bold text-sm text-gray-900">{proj.name}</h3>{proj.type && <span className="text-xs px-2 py-0.5 rounded-full text-white font-medium" style={{ backgroundColor: accentColor }}>{proj.type}</span>}</div>{proj.description && <p className="text-xs text-gray-600">{proj.description}</p>}</div>)}</div></div>}
           {data.achievements && data.achievements.length > 0 && <div><h2 className="text-sm font-bold uppercase tracking-widest mb-2" style={{ color: accentColor }}>Achievements</h2><div className="space-y-2">{data.achievements.map((a, i) => <div key={i} className="shadow-sm border rounded-lg p-3 bg-white border-l-4" style={{ borderLeftColor: accentColor }}><div className="flex items-center gap-2 mb-0.5"><span className="text-xs font-bold px-1.5 py-0.5 rounded-full text-white" style={{ backgroundColor: accentColor }}>{a.category}</span><span className="text-sm font-semibold text-gray-800">{a.title}</span></div>{a.from_value != null && a.from_value !== '' && a.to_value != null && a.to_value !== '' && <p className="text-sm font-bold" style={{ color: accentColor }}>{a.from_value}{a.unit} → {a.to_value}{a.unit}</p>}{a.description && <p className="text-xs text-gray-500 mt-0.5">{a.description}</p>}</div>)}</div></div>}
+          {data.additional_info && data.additional_info.length > 0 && (
+            <div>
+              <h2 className="text-sm font-bold uppercase tracking-widest mb-2" style={{ color: accentColor }}>Additional Information</h2>
+              <div className="space-y-2">
+                {data.additional_info.map((item, i) => (
+                  <div key={i} className="shadow-sm border rounded-lg p-3 bg-white flex flex-col gap-0.5">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-bold px-1.5 py-0.5 rounded-full text-white" style={{ backgroundColor: accentColor }}>{item.category}</span>
+                      <span className="text-sm font-semibold text-gray-800">{item.title}</span>
+                      {item.date && <span className="text-xs text-gray-400">{item.date}</span>}
+                    </div>
+                    {item.subtitle && <p className="text-xs text-gray-500">{item.subtitle}</p>}
+                    {item.description && <p className="text-xs text-gray-500">{item.description}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         <div className="space-y-4">
           {data.education && data.education.length > 0 && <div><h2 className="text-sm font-bold uppercase tracking-widest mb-2" style={{ color: accentColor }}>Education</h2><div className="space-y-2">{data.education.map((edu, i) => <div key={i} className="shadow-sm border rounded-lg p-3 bg-white"><h3 className="font-bold text-sm text-gray-900">{edu.degree}{edu.field ? ` in ${edu.field}` : ''}</h3><p className="text-xs font-semibold" style={{ color: accentColor }}>{edu.institution}</p><div className="flex justify-between text-xs text-gray-400 mt-0.5"><span>{formatDate(edu.graduation_date)}</span>{edu.gpa && <span>GPA: {edu.gpa}</span>}</div></div>)}</div></div>}

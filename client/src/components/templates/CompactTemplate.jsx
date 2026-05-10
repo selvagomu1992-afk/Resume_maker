@@ -38,6 +38,24 @@ const CompactTemplate = ({ data, accentColor }) => {
               <div className="space-y-1.5">{data.achievements.map((a, i) => <div key={i} className="flex items-start gap-1.5"><span className="font-bold shrink-0" style={{ color: accentColor }}>[{a.category}]</span><div><span className="font-semibold text-gray-800">{a.title}</span>{a.from_value != null && a.from_value !== '' && a.to_value != null && a.to_value !== '' && <span className="ml-1 font-bold" style={{ color: accentColor }}>{a.from_value}{a.unit}→{a.to_value}{a.unit}</span>}{a.description && <p className="text-gray-500">{a.description}</p>}</div></div>)}</div>
             </section>
           )}
+          {data.additional_info && data.additional_info.length > 0 && (
+            <section>
+              <h2 className="text-sm font-bold uppercase tracking-wide mb-1.5 pb-0.5 border-b" style={{ color: accentColor, borderColor: accentColor }}>Additional Information</h2>
+              <div className="grid grid-cols-2 gap-2">
+                {data.additional_info.map((item, i) => (
+                  <div key={i} className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="font-bold shrink-0" style={{ color: accentColor }}>[{item.category}]</span>
+                      <span className="font-semibold text-gray-800">{item.title}</span>
+                      {item.date && <span className="text-gray-400">{item.date}</span>}
+                    </div>
+                    {item.subtitle && <p className="text-gray-500">{item.subtitle}</p>}
+                    {item.description && <p className="text-gray-500">{item.description}</p>}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
         <div className="flex-[2] space-y-3">
           {data.education && data.education.length > 0 && (

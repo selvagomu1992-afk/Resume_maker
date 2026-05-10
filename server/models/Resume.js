@@ -56,11 +56,20 @@ const ResumeSchema = new mongoose.Schema({
     ],
     achievements: [
         {
-            category: { type: String },   // e.g. "Manpower Reduction", "Sales Improvement"
+            category: { type: String },
             title: { type: String },
             from_value: { type: Number },
             to_value: { type: Number },
-            unit: { type: String },        // e.g. "%", "units", "₹"
+            unit: { type: String },
+            description: { type: String },
+        }
+    ],
+    additional_info: [
+        {
+            category: { type: String },  // e.g. "Certification", "Award", "Hobby", "Volunteer", "Reference"
+            title: { type: String },
+            subtitle: { type: String },  // e.g. issuer, organization
+            date: { type: String },
             description: { type: String },
         }
     ],
