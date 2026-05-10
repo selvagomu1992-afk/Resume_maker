@@ -98,12 +98,42 @@ const ExecutiveTemplate = ({ data, accentColor }) => {
                             </h2>
                             <ul className="space-y-2">
                                 {data.skills.map((skill, i) => (
-                                    <li key={i} className="text-sm text-white/90 flex items-center gap-2">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-white/50 shrink-0" />
-                                        {skill.name}
+                                    <li key={i} className="flex items-center justify-between gap-2">
+                                        <span className="text-xs text-white/90 truncate">{skill.name}</span>
+                                        <div className="flex gap-0.5 shrink-0">
+                                            {[1,2,3,4,5].map(d => (
+                                                <span key={d} className="w-2.5 h-2.5 rounded-sm border inline-block"
+                                                    style={{ borderColor: 'rgba(255,255,255,0.6)', backgroundColor: d <= (skill.level ?? 3) ? 'white' : 'transparent' }}
+                                                />
+                                            ))}
+                                        </div>
                                     </li>
                                 ))}
                             </ul>
+                        </div>
+                    )}
+
+                    {/* Languages */}
+                    {data.languages && data.languages.length > 0 && (
+                        <div>
+                            <h2 className="text-xs font-bold uppercase tracking-widest text-white/50 mb-3 border-b border-white/20 pb-1">
+                                Languages
+                            </h2>
+                            <div className="grid grid-cols-4 text-xs font-bold text-white/40 uppercase mb-1">
+                                <span>Lang</span><span className="text-center">R</span><span className="text-center">W</span><span className="text-center">S</span>
+                            </div>
+                            {data.languages.map((lang, i) => (
+                                <div key={i} className="grid grid-cols-4 items-center py-1 border-b border-white/10 last:border-0">
+                                    <span className="text-xs font-medium text-white/90 truncate">{lang.name}</span>
+                                    {['read','write','speak'].map(f => (
+                                        <div key={f} className="flex justify-center">
+                                            <span className="w-2.5 h-2.5 rounded-sm border inline-block"
+                                                style={{ borderColor: 'rgba(255,255,255,0.6)', backgroundColor: lang[f] ? 'white' : 'transparent', opacity: lang[f] ? 1 : 0.3 }}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
                         </div>
                     )}
 
