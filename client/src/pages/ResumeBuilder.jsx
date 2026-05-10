@@ -184,18 +184,21 @@ const ResumeBuilder = () => {
       await new Promise(resolve => { img.onload = resolve })
 
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: 'a4', hotfixes: ['px_scaling'] })
-      const pdfW = pdf.internal.pageSize.getWidth()   // px
-      const pdfH = pdf.internal.pageSize.getHeight()  // px
+      const pdfW = pdf.internal.pageSize.getWidth()
+      const pdfH = pdf.internal.pageSize.getHeight()
 
-      // Margin in PDF px — adds breathing room at top/bottom of each page
-      const MARGIN = 28  // ~10mm at 96dpi
+      // Margin in PDF px (~10mm)
+      const MARGIN = 28
 
-      // Scale factor: captured image width → PDF content width (inside margins)
+      // img.width is A4_WIDTH_PX * PIXEL_RATIO (1588px at 2x)
+      // We need to scale the image down to fit the PDF content width
       const contentW = pdfW - MARGIN * 2
+      const contentH = pdfH - MARGIN * 2
+
+      // Scale: how many PDF px per captured image px
       const scale = contentW / img.width
 
-      // How many px of the captured image fit in one page's content area
-      const contentH = pdfH - MARGIN * 2
+      // How many captured image px fit in one page's content height
       const pageHeightInImgPx = Math.floor(contentH / scale)
 
       const totalPages = Math.ceil(img.height / pageHeightInImgPx)
@@ -208,26 +211,22 @@ const ResumeBuilder = () => {
         const srcY = page * pageHeightInImgPx
         const srcH = Math.min(pageHeightInImgPx, img.height - srcY)
 
-        // Canvas height = content area height (not full page)
-        canvas.height = pageHeightInImgPx
+        canvas.height = srcH
 
-        // Fill white
         ctx.fillStyle = '#ffffff'
         ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-        // Draw the slice
         ctx.drawImage(img, 0, srcY, img.width, srcH, 0, 0, img.width, srcH)
 
         const sliceData = canvas.toDataURL('image/png')
 
         if (page > 0) pdf.addPage()
 
-        // Fill entire page white first
+        // White background for full page
         pdf.setFillColor(255, 255, 255)
         pdf.rect(0, 0, pdfW, pdfH, 'F')
 
-        // Place content with margin on all sides
-        const sliceHeightInPdf = (srcH / img.width) * contentW
+        // Render slice at correct size: contentW wide, proportional height
+        const sliceHeightInPdf = srcH * scale
         pdf.addImage(sliceData, 'PNG', MARGIN, MARGIN, contentW, sliceHeightInPdf)
       }
 
