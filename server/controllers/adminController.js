@@ -32,7 +32,7 @@ export const adminLogin = async (req, res) => {
 // Returns all users with their resume count and paid resume count
 export const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find({}, '-password -resetPasswordOtp -resetPasswordOtpExpires').lean();
+        const users = await User.find({}, '-password -resetPasswordOtp -resetPasswordOtpExpires').sort({ createdAt: -1 }).lean();
 
         // For each user, get resume stats
         const usersWithStats = await Promise.all(
