@@ -94,7 +94,7 @@ const ElegantTemplate = ({ data, accentColor }) => {
                     {data.professional_summary && (
                         <section>
                             <ElegantLabel label="Profile" color={accentColor} />
-                            <p className="text-sm text-gray-600 leading-relaxed mt-3 italic text-center">
+                            <p className="text-sm text-gray-600 leading-relaxed mt-3 italic text-justify">
                                 {data.professional_summary}
                             </p>
                         </section>
@@ -114,7 +114,7 @@ const ElegantTemplate = ({ data, accentColor }) => {
                                         </div>
                                         <p className="text-xs font-medium mt-0.5" style={{ color: accentColor }}>{exp.company}</p>
                                         {exp.description && (
-                                            <p className="text-xs text-gray-600 mt-2 leading-relaxed whitespace-pre-line text-center">
+                                            <p className="text-xs text-gray-600 mt-2 leading-relaxed whitespace-pre-line text-justify">
                                                 {exp.description}
                                             </p>
                                         )}

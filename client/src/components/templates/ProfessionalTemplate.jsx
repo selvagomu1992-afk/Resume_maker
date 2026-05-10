@@ -17,14 +17,14 @@ const ProfessionalTemplate = ({ data, accentColor }) => {
         </div>
       </header>
       <div className="h-px mx-8" style={{ backgroundColor: accentColor + '40' }} />
-      {data.professional_summary && <div className="px-8 py-4"><p className="text-sm text-gray-700 leading-relaxed italic text-center">{data.professional_summary}</p></div>}
+      {data.professional_summary && <div className="px-8 py-4"><p className="text-sm text-gray-700 leading-relaxed italic text-justify">{data.professional_summary}</p></div>}
       <div className="px-8 pb-8 flex gap-8">
         <div className="flex-[3] space-y-5">
           {data.experience && data.experience.length > 0 && (
             <section>
               <h2 className="text-base font-bold uppercase tracking-widest mb-3 pb-1 border-b-2" style={{ color: accentColor, borderColor: accentColor }}>Experience</h2>
               <div className="space-y-4">{data.experience.map((exp, i) => (
-                <div key={i}><div className="flex justify-between items-baseline"><h3 className="font-bold text-gray-900">{exp.position}</h3><span className="text-xs text-gray-500 shrink-0 ml-2">{formatDate(exp.start_date)} – {exp.is_current ? 'Present' : formatDate(exp.end_date)}</span></div><p className="text-sm font-semibold" style={{ color: accentColor }}>{exp.company}</p>{exp.description && <p className="text-sm text-gray-600 mt-1 leading-relaxed whitespace-pre-line text-center">{exp.description}</p>}</div>
+                <div key={i}><div className="flex justify-between items-baseline"><h3 className="font-bold text-gray-900">{exp.position}</h3><span className="text-xs text-gray-500 shrink-0 ml-2">{formatDate(exp.start_date)} – {exp.is_current ? 'Present' : formatDate(exp.end_date)}</span></div><p className="text-sm font-semibold" style={{ color: accentColor }}>{exp.company}</p>{exp.description && <p className="text-sm text-gray-600 mt-1 leading-relaxed whitespace-pre-line text-justify">{exp.description}</p>}</div>
               ))}</div>
             </section>
           )}

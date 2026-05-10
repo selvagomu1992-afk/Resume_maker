@@ -154,7 +154,7 @@ const CreativeTemplate = ({ data, accentColor }) => {
                             >
                                 About Me
                             </h2>
-                            <p className="text-sm text-gray-600 leading-relaxed text-center">
+                            <p className="text-sm text-gray-600 leading-relaxed text-justify">
                                 {data.professional_summary}
                             </p>
                         </section>
@@ -188,7 +188,7 @@ const CreativeTemplate = ({ data, accentColor }) => {
                                             </span>
                                         </div>
                                         {exp.description && (
-                                            <p className="text-xs text-gray-600 mt-2 leading-relaxed whitespace-pre-line text-center">
+                                            <p className="text-xs text-gray-600 mt-2 leading-relaxed whitespace-pre-line text-justify">
                                                 {exp.description}
                                             </p>
                                         )}

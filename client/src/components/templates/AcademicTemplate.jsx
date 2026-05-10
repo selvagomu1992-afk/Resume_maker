@@ -17,7 +17,7 @@ const AcademicTemplate = ({ data, accentColor }) => {
           {pi.website && <span className="flex items-center gap-1"><Globe className="size-3.5" />{pi.website}</span>}
         </div>
       </header>
-      {data.professional_summary && <section className="mb-6"><SD title="Summary" /><p className="text-sm text-gray-700 leading-relaxed text-center max-w-2xl mx-auto">{data.professional_summary}</p></section>}
+      {data.professional_summary && <section className="mb-6"><SD title="Summary" /><p className="text-sm text-gray-700 leading-relaxed text-justify max-w-2xl mx-auto">{data.professional_summary}</p></section>}
       {data.education && data.education.length > 0 && (
         <section className="mb-6"><SD title="Education" />
           <div className="space-y-4">{data.education.map((edu, i) => <div key={i} className="flex justify-between items-start"><div><h3 className="font-bold text-gray-900">{edu.degree}{edu.field ? ` in ${edu.field}` : ''}</h3><p className="text-sm font-semibold" style={{ color: accentColor }}>{edu.institution}</p>{edu.gpa && <p className="text-sm text-gray-500">GPA: {edu.gpa}</p>}</div><span className="text-sm text-gray-500 shrink-0 ml-4">{formatDate(edu.graduation_date)}</span></div>)}</div>
@@ -25,7 +25,7 @@ const AcademicTemplate = ({ data, accentColor }) => {
       )}
       {data.experience && data.experience.length > 0 && (
         <section className="mb-6"><SD title="Experience" />
-          <div className="space-y-4">{data.experience.map((exp, i) => <div key={i}><div className="flex justify-between items-baseline"><h3 className="font-bold text-gray-900">{exp.position}</h3><span className="text-sm text-gray-500 shrink-0 ml-4">{formatDate(exp.start_date)} – {exp.is_current ? 'Present' : formatDate(exp.end_date)}</span></div><p className="text-sm font-semibold" style={{ color: accentColor }}>{exp.company}</p>{exp.description && <p className="text-sm text-gray-600 mt-1 leading-relaxed whitespace-pre-line text-center">{exp.description}</p>}</div>)}</div>
+          <div className="space-y-4">{data.experience.map((exp, i) => <div key={i}><div className="flex justify-between items-baseline"><h3 className="font-bold text-gray-900">{exp.position}</h3><span className="text-sm text-gray-500 shrink-0 ml-4">{formatDate(exp.start_date)} – {exp.is_current ? 'Present' : formatDate(exp.end_date)}</span></div><p className="text-sm font-semibold" style={{ color: accentColor }}>{exp.company}</p>{exp.description && <p className="text-sm text-gray-600 mt-1 leading-relaxed whitespace-pre-line text-justify">{exp.description}</p>}</div>)}</div>
         </section>
       )}
       {data.project && data.project.length > 0 && (

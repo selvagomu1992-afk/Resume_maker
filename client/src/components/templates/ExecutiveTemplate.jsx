@@ -137,7 +137,7 @@ const ExecutiveTemplate = ({ data, accentColor }) => {
                         <h2 className="text-xs font-bold uppercase tracking-widest mb-2 pb-1 border-b-2" style={{ color: accentColor, borderColor: accentColor }}>
                             Professional Summary
                         </h2>
-                        <p className="text-gray-600 text-sm leading-relaxed mt-2 text-center">
+                        <p className="text-gray-600 text-sm leading-relaxed mt-2 text-justify">
                             {data.professional_summary}
                         </p>
                     </section>
@@ -162,7 +162,7 @@ const ExecutiveTemplate = ({ data, accentColor }) => {
                                         </span>
                                     </div>
                                     {exp.description && (
-                                        <p className="text-sm text-gray-600 mt-2 leading-relaxed whitespace-pre-line text-center">
+                                        <p className="text-sm text-gray-600 mt-2 leading-relaxed whitespace-pre-line text-justify">
                                             {exp.description}
                                         </p>
                                     )}

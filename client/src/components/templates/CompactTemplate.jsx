@@ -15,14 +15,14 @@ const CompactTemplate = ({ data, accentColor }) => {
           {pi.website && <div className="flex items-center gap-1"><Globe className="size-3" /><span className="truncate max-w-[140px]">{pi.website}</span></div>}
         </div>
       </header>
-      {data.professional_summary && <section className="mb-3"><h2 className="text-sm font-bold uppercase tracking-wide mb-1" style={{ color: accentColor }}>Summary</h2><p className="text-xs text-gray-600 leading-relaxed text-center">{data.professional_summary}</p></section>}
+      {data.professional_summary && <section className="mb-3"><h2 className="text-sm font-bold uppercase tracking-wide mb-1" style={{ color: accentColor }}>Summary</h2><p className="text-xs text-gray-600 leading-relaxed text-justify">{data.professional_summary}</p></section>}
       <div className="flex gap-4">
         <div className="flex-[3] space-y-3">
           {data.experience && data.experience.length > 0 && (
             <section>
               <h2 className="text-sm font-bold uppercase tracking-wide mb-1.5 pb-0.5 border-b" style={{ color: accentColor, borderColor: accentColor }}>Experience</h2>
               <div className="space-y-2">{data.experience.map((exp, i) => (
-                <div key={i}><div className="flex justify-between items-baseline"><span className="font-bold text-gray-900">{exp.position}</span><span className="text-gray-400 shrink-0 ml-1">{formatDate(exp.start_date)} – {exp.is_current ? 'Present' : formatDate(exp.end_date)}</span></div><p className="font-semibold" style={{ color: accentColor }}>{exp.company}</p>{exp.description && <p className="text-gray-600 mt-0.5 leading-relaxed whitespace-pre-line text-center">{exp.description}</p>}</div>
+                <div key={i}><div className="flex justify-between items-baseline"><span className="font-bold text-gray-900">{exp.position}</span><span className="text-gray-400 shrink-0 ml-1">{formatDate(exp.start_date)} – {exp.is_current ? 'Present' : formatDate(exp.end_date)}</span></div><p className="font-semibold" style={{ color: accentColor }}>{exp.company}</p>{exp.description && <p className="text-gray-600 mt-0.5 leading-relaxed whitespace-pre-line text-justify">{exp.description}</p>}</div>
               ))}</div>
             </section>
           )}

@@ -19,11 +19,11 @@ const BoldTemplate = ({ data, accentColor }) => {
         </div>
       </div>
       <div className="px-8 py-6 space-y-5">
-        {data.professional_summary && <section><SH>Professional Summary</SH><p className="text-sm text-gray-700 leading-relaxed text-center">{data.professional_summary}</p></section>}
+        {data.professional_summary && <section><SH>Professional Summary</SH><p className="text-sm text-gray-700 leading-relaxed text-justify">{data.professional_summary}</p></section>}
         {data.experience && data.experience.length > 0 && (
           <section><SH>Experience</SH>
             <div className="space-y-4">{data.experience.map((exp, i) => (
-              <div key={i}><div className="flex justify-between items-baseline"><h3 className="font-bold text-gray-900">{exp.position}</h3><span className="text-xs text-gray-500 shrink-0 ml-2">{formatDate(exp.start_date)} – {exp.is_current ? 'Present' : formatDate(exp.end_date)}</span></div><p className="text-sm font-semibold" style={{ color: accentColor }}>{exp.company}</p>{exp.description && <p className="text-sm text-gray-600 mt-1 leading-relaxed whitespace-pre-line text-center">{exp.description}</p>}</div>
+              <div key={i}><div className="flex justify-between items-baseline"><h3 className="font-bold text-gray-900">{exp.position}</h3><span className="text-xs text-gray-500 shrink-0 ml-2">{formatDate(exp.start_date)} – {exp.is_current ? 'Present' : formatDate(exp.end_date)}</span></div><p className="text-sm font-semibold" style={{ color: accentColor }}>{exp.company}</p>{exp.description && <p className="text-sm text-gray-600 mt-1 leading-relaxed whitespace-pre-line text-justify">{exp.description}</p>}</div>
             ))}</div>
           </section>
         )}

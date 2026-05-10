@@ -163,7 +163,7 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                             <h2 className="text-sm font-semibold tracking-widest mb-3" style={{ color: accentColor }} >
                                 SUMMARY
                             </h2>
-                            <p className="text-zinc-700 leading-relaxed text-center">
+                            <p className="text-zinc-700 leading-relaxed text-justify">
                                 {data.professional_summary}
                             </p>
                         </section>
@@ -191,7 +191,7 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                                             {exp.company}
                                         </p>
                                         {exp.description && (
-                                            <ul className="list-disc list-inside text-sm text-zinc-700 leading-relaxed space-y-1 text-center">
+                                            <ul className="list-disc list-inside text-sm text-zinc-700 leading-relaxed space-y-1 text-justify">
                                                 {exp.description.split("\n").map((line, i) => (
                                                     <li key={i}>{line}</li>
                                                 ))}

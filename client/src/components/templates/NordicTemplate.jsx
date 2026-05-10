@@ -16,11 +16,11 @@ const NordicTemplate = ({ data, accentColor }) => {
           {pi.website && <span className="flex items-center gap-1.5"><Globe className="size-3.5" />{pi.website}</span>}
         </div>
       </header>
-      {data.professional_summary && <section className="mb-10"><p className="text-base font-light text-gray-600 leading-loose max-w-2xl text-center">{data.professional_summary}</p></section>}
+      {data.professional_summary && <section className="mb-10"><p className="text-base font-light text-gray-600 leading-loose max-w-2xl text-justify">{data.professional_summary}</p></section>}
       {data.experience && data.experience.length > 0 && (
         <section className="mb-10">
           <h2 className="text-xs font-bold uppercase tracking-widest mb-6" style={{ color: accentColor }}>Experience</h2>
-          <div className="space-y-7">{data.experience.map((exp, i) => <div key={i} className="flex gap-8"><div className="w-28 shrink-0 text-xs text-gray-400 font-light pt-0.5 text-right"><p>{formatDate(exp.start_date)}</p><p>–</p><p>{exp.is_current ? 'Present' : formatDate(exp.end_date)}</p></div><div className="flex-1"><h3 className="font-semibold text-gray-900">{exp.position}</h3><p className="text-sm font-light" style={{ color: accentColor }}>{exp.company}</p>{exp.description && <p className="text-sm font-light text-gray-600 mt-2 leading-relaxed whitespace-pre-line text-center">{exp.description}</p>}</div></div>)}</div>
+          <div className="space-y-7">{data.experience.map((exp, i) => <div key={i} className="flex gap-8"><div className="w-28 shrink-0 text-xs text-gray-400 font-light pt-0.5 text-right"><p>{formatDate(exp.start_date)}</p><p>–</p><p>{exp.is_current ? 'Present' : formatDate(exp.end_date)}</p></div><div className="flex-1"><h3 className="font-semibold text-gray-900">{exp.position}</h3><p className="text-sm font-light" style={{ color: accentColor }}>{exp.company}</p>{exp.description && <p className="text-sm font-light text-gray-600 mt-2 leading-relaxed whitespace-pre-line text-justify">{exp.description}</p>}</div></div>)}</div>
         </section>
       )}
       {data.education && data.education.length > 0 && (
