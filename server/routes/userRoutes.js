@@ -24,4 +24,16 @@ userRouter.get('/payment-amount', protect, async (req, res) => {
     }
 });
 
+// GET /api/users/max-downloads — returns this user's effective max downloads
+userRouter.get('/max-downloads', protect, async (req, res) => {
+    try {
+        const user = await User.findById(req.userId).lean();
+        const globalMax = parseInt(process.env.MAX_DOWNLOADS || '3', 10);
+        const maxDownloads = user?.customMaxDownloads ?? globalMax;
+        return res.json({ success: true, maxDownloads });
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+});
+
 export default userRouter;

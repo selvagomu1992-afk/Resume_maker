@@ -57,11 +57,17 @@ const ResumeBuilder = () => {
       if (data.resume) {
         setResumeData(data.resume)
         setIsPaid(!!data.resume.isPaid)
-        // Calculate remaining downloads
+        // Fetch user's effective max downloads from server (respects admin override)
         if (data.resume.isPaid) {
-          const max = data.resume.maxDownloads || 3
-          const used = data.resume.downloadCount || 0
-          setRemainingDownloads(max - used)
+          try {
+            const { data: dlData } = await api.get('/api/users/max-downloads', { headers: { Authorization: token } })
+            const max = dlData.maxDownloads || 3
+            const used = data.resume.downloadCount || 0
+            setRemainingDownloads(Math.max(0, max - used))
+          } catch {
+            const used = data.resume.downloadCount || 0
+            setRemainingDownloads(Math.max(0, 3 - used))
+          }
         }
         document.title = data.resume.title;
         return data.resume
@@ -110,7 +116,13 @@ const ResumeBuilder = () => {
           const { data } = await api.post('/api/payment/verify', { orderId, resumeId })
           if (data.isPaid) {
             setIsPaid(true)
-            setRemainingDownloads(3)
+            // Fetch user's max downloads to set correct remaining count
+            try {
+              const { data: dlData } = await api.get('/api/users/max-downloads', { headers: { Authorization: token } })
+              setRemainingDownloads(dlData.maxDownloads || 3)
+            } catch {
+              setRemainingDownloads(3)
+            }
             toast.success('Payment successful! Click Download PDF to save your resume.')
           } else {
             toast.error('Payment not completed. Please try again.')
