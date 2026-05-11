@@ -240,8 +240,6 @@ const ResumeBuilder = () => {
     }
   }
   const [paymentAmount, setPaymentAmount] = useState(49)
-
-  const [paymentAmount, setPaymentAmount] = useState(49)
   const goToPayment = () => navigate(`/payment/${resumeId}`)
 
   // Load current payment price from server
