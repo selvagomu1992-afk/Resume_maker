@@ -157,22 +157,7 @@ const ResumeBuilder = () => {
 
     const toastId = toast.loading('Generating PDF...')
     try {
-      // Record the download — increments count, resets isPaid after max downloads
-      const { data: dlData } = await api.post(
-        `/api/resumes/download/${resumeId}`,
-        {},
-        { headers: { Authorization: token } }
-      )
-
-      // Update remaining count in UI
-      setRemainingDownloads(dlData.remaining)
-
-      // If exhausted, flip isPaid off so Pay button shows again
-      if (dlData.exhausted) {
-        setIsPaid(false)
-        toast.success('Last download used. Pay again to download more.', { id: toastId, duration: 4000 })
-      }
-      const A4_WIDTH_PX = 794   // A4 at 96dpi
+      const A4_WIDTH_PX = 794
       const PIXEL_RATIO = 2     // 2x for crisp quality
 
       // Save and force A4 width for consistent capture on all screen sizes
@@ -254,7 +239,25 @@ const ResumeBuilder = () => {
       }
 
       pdf.save(`${resumeData.title || 'resume'}.pdf`)
-      toast.success('PDF downloaded!', { id: toastId })
+
+      // Record download count AFTER successful PDF generation
+      try {
+        const { data: dlData } = await api.post(
+          `/api/resumes/download/${resumeId}`,
+          {},
+          { headers: { Authorization: token } }
+        )
+        setRemainingDownloads(dlData.remaining)
+        if (dlData.exhausted) {
+          setIsPaid(false)
+          toast.success('PDF downloaded! No downloads remaining — pay again for more.', { id: toastId, duration: 5000 })
+        } else {
+          toast.success(`PDF downloaded! ${dlData.remaining} download${dlData.remaining !== 1 ? 's' : ''} remaining.`, { id: toastId })
+        }
+      } catch {
+        // Count tracking failed — still show success since PDF was saved
+        toast.success('PDF downloaded!', { id: toastId })
+      }
     } catch (err) {
       console.error('PDF generation failed:', err)
       const el = document.getElementById('resume-preview')
