@@ -25,7 +25,7 @@ export const getAllUsers = async (req, res) => {
         const users = await User.find({}, '-password -resetPasswordOtp -resetPasswordOtpExpires').sort({ createdAt: -1 }).lean();
         const usersWithStats = await Promise.all(
             users.map(async (user) => {
-                const resumes = await Resume.find({ userId: user._id }, 'isPaid createdAt').lean();
+                const resumes = await Resume.find({ userId: user._id }, 'isPaid createdAt title paidOrderId').lean();
                 return {
                     _id: user._id,
                     name: user.name,
@@ -34,6 +34,7 @@ export const getAllUsers = async (req, res) => {
                     totalResumes: resumes.length,
                     paidResumes: resumes.filter(r => r.isPaid).length,
                     paidAmount: resumes.filter(r => r.isPaid).length * amount,
+                    resumes: resumes.map(r => ({ _id: r._id, title: r.title, isPaid: r.isPaid })),
                 };
             })
         );
@@ -96,7 +97,47 @@ export const updatePaymentAmount = async (req, res) => {
     }
 }
 
-// GET /api/admin/download-payments
+// PUT /api/admin/user/:userId/payment
+// Admin manually sets isPaid for all resumes of a user, or a specific resume
+export const updateUserPayment = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { isPaid, resumeId } = req.body;
+
+        if (typeof isPaid !== 'boolean') {
+            return res.status(400).json({ message: 'isPaid must be true or false' });
+        }
+
+        if (resumeId) {
+            // Update a specific resume
+            await Resume.findOneAndUpdate({ _id: resumeId, userId }, { isPaid });
+        } else {
+            // Update ALL resumes of this user
+            await Resume.updateMany({ userId }, { isPaid });
+        }
+
+        return res.json({ success: true, message: `Payment status updated to ${isPaid}` });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+// PUT /api/admin/user/:userId/payment — admin manually toggle isPaid
+export const updateUserPayment = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { isPaid, resumeId } = req.body;
+        if (typeof isPaid !== 'boolean') return res.status(400).json({ message: 'isPaid must be true or false' });
+        if (resumeId) {
+            await Resume.findOneAndUpdate({ _id: resumeId, userId }, { isPaid });
+        } else {
+            await Resume.updateMany({ userId }, { isPaid });
+        }
+        return res.json({ success: true, message: `Payment status updated to ${isPaid}` });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
 // Download all paid users as CSV
 export const downloadPayments = async (req, res) => {
     try {
