@@ -24,6 +24,7 @@ const TemplateSelector = ({ selectedTemplate, onChange }) => {
         { id: "nordic",       name: "Nordic",        preview: "Scandinavian minimal — huge thin name, lots of whitespace, dot skills" },
         { id: "corner",       name: "Corner",        preview: "Decorative corner brackets, centered name, geometric diamond divider" },
         { id: "strip",        name: "Strip",         preview: "Alternating section backgrounds with bold section numbers (01, 02...)" },
+        { id: "gradient",     name: "Gradient",      preview: "Diagonal gradient header with floating card sections and progress bar skills" },
     ]
 
     return (

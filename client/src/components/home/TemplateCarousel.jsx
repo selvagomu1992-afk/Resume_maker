@@ -22,6 +22,7 @@ import CardTemplate from '../templates/CardTemplate'
 import NordicTemplate from '../templates/NordicTemplate'
 import CornerTemplate from '../templates/CornerTemplate'
 import StripTemplate from '../templates/StripTemplate'
+import GradientTemplate from '../templates/GradientTemplate'
 
 const TEMPLATES = [
     { id: 'classic',       name: 'Classic',        component: ClassicTemplate,       color: '#3B82F6' },
@@ -43,6 +44,7 @@ const TEMPLATES = [
     { id: 'nordic',        name: 'Nordic',         component: NordicTemplate,        color: '#475569' },
     { id: 'corner',        name: 'Corner',         component: CornerTemplate,        color: '#BE185D' },
     { id: 'strip',         name: 'Strip',          component: StripTemplate,         color: '#16A34A' },
+    { id: 'gradient',      name: 'Gradient',       component: GradientTemplate,      color: '#7C3AED' },
 ]
 
 // Cycle through dummy resumes for variety

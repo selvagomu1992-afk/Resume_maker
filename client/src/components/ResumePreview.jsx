@@ -18,6 +18,7 @@ import CardTemplate from './templates/CardTemplate'
 import NordicTemplate from './templates/NordicTemplate'
 import CornerTemplate from './templates/CornerTemplate'
 import StripTemplate from './templates/StripTemplate'
+import GradientTemplate from './templates/GradientTemplate'
 
 const normalizeSkills = (skills = []) =>
     skills.map(s => (typeof s === 'string' ? { name: s, level: 3 } : s))
@@ -45,6 +46,7 @@ const ResumePreview = ({ data, template, accentColor, classes = "" }) => {
             case "nordic":         return <NordicTemplate data={normData} accentColor={accentColor} />;
             case "corner":         return <CornerTemplate data={normData} accentColor={accentColor} />;
             case "strip":          return <StripTemplate data={normData} accentColor={accentColor} />;
+            case "gradient":       return <GradientTemplate data={normData} accentColor={accentColor} />;
             default:               return <ClassicTemplate data={normData} accentColor={accentColor} />;
         }
     }
