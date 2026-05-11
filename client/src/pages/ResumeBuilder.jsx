@@ -244,10 +244,11 @@ const ResumeBuilder = () => {
 
   // Load current payment price from server (user-specific or global)
   useEffect(() => {
-    api.get('/api/admin/payment-amount').then(({ data }) => {
-      if (data.amount) setPaymentAmount(data.amount)
-    }).catch(() => {})
-  }, [])
+    if (!token) return
+    api.get('/api/users/payment-amount', { headers: { Authorization: token } })
+      .then(({ data }) => { if (data.amount) setPaymentAmount(data.amount) })
+      .catch(() => {})
+  }, [token])
 
   const saveResume = async () => {
     try {
