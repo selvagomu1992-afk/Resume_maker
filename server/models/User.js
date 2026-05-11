@@ -6,7 +6,8 @@ const UserSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     resetPasswordOtp: { type: String },
-    resetPasswordOtpExpires: { type: Date }
+    resetPasswordOtpExpires: { type: Date },
+    customPaymentAmount: { type: Number, default: null }  // null = use global amount
 }, { timestamps: true })
 
 UserSchema.methods.comparePassword = function (password) {

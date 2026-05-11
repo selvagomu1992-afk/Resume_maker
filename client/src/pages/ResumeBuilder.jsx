@@ -242,7 +242,7 @@ const ResumeBuilder = () => {
   const [paymentAmount, setPaymentAmount] = useState(49)
   const goToPayment = () => navigate(`/payment/${resumeId}`)
 
-  // Load current payment price from server
+  // Load current payment price from server (user-specific or global)
   useEffect(() => {
     api.get('/api/admin/payment-amount').then(({ data }) => {
       if (data.amount) setPaymentAmount(data.amount)

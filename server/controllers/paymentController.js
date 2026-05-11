@@ -16,6 +16,12 @@ export const createOrder = async (req, res) => {
         const { resumeId } = req.body;
         const orderId = `order_${Date.now()}_${resumeId || Math.floor(Math.random() * 1000)}`;
 
+        // Use user's custom amount if set, otherwise global
+        const User = (await import('../models/User.js')).default;
+        const user = await User.findById(req.userId).lean();
+        const globalAmount = parseFloat(process.env.PAYMENT_AMOUNT || '49');
+        const orderAmount = user?.customPaymentAmount ?? globalAmount;
+
         const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, '')
         const backendUrl = (process.env.BACKEND_URL || 'https://resume-backend-757i.onrender.com').replace(/\/+$/, '')
 
@@ -23,7 +29,7 @@ export const createOrder = async (req, res) => {
         const returnUrl = `${frontendUrl}/app/builder/${resumeId}?order_id=${orderId}`
 
         const request = {
-            order_amount: parseFloat(process.env.PAYMENT_AMOUNT || '49'),
+            order_amount: orderAmount,
             order_currency: "INR",
             order_id: orderId,
             customer_details: {

@@ -14,6 +14,8 @@ const AdminDashboard = () => {
     const [editingPrice, setEditingPrice] = useState(false)
     const [newPrice, setNewPrice] = useState('')
     const [expandedUser, setExpandedUser] = useState(null) // userId whose resumes are expanded
+    const [editingAmountUserId, setEditingAmountUserId] = useState(null)
+    const [newUserAmount, setNewUserAmount] = useState('')
 
     const adminToken = localStorage.getItem('adminToken')
     const headers = { Authorization: adminToken }
@@ -83,6 +85,30 @@ const AdminDashboard = () => {
             toast.success(`Resume marked as ${!currentIsPaid ? 'Paid' : 'Unpaid'}`)
         } catch (err) {
             toast.error(err?.response?.data?.message || 'Failed to update')
+        }
+    }
+
+    const saveUserAmount = async (userId) => {
+        const val = parseFloat(newUserAmount)
+        if (!val || val <= 0) { toast.error('Enter a valid amount'); return }
+        try {
+            await api.put(`/api/admin/user/${userId}/amount`, { amount: val }, { headers })
+            setUsers(prev => prev.map(u => u._id === userId ? { ...u, customPaymentAmount: val } : u))
+            setEditingAmountUserId(null)
+            setNewUserAmount('')
+            toast.success(`Custom amount ₹${val} set for user`)
+        } catch (err) {
+            toast.error(err?.response?.data?.message || 'Failed')
+        }
+    }
+
+    const resetUserAmount = async (userId) => {
+        try {
+            await api.put(`/api/admin/user/${userId}/amount`, { amount: null }, { headers })
+            setUsers(prev => prev.map(u => u._id === userId ? { ...u, customPaymentAmount: null } : u))
+            toast.success('Reset to global amount')
+        } catch (err) {
+            toast.error(err?.response?.data?.message || 'Failed')
         }
     }
 
@@ -214,7 +240,45 @@ const AdminDashboard = () => {
                                                         <span className='inline-flex items-center justify-center w-7 h-7 rounded-full bg-green-100 text-green-700 font-semibold text-xs'>{user.paidResumes}</span>
                                                     </td>
                                                     <td className='px-6 py-4 text-center'>
-                                                        <span className='font-semibold text-yellow-700'>{user.paidAmount > 0 ? `₹${user.paidAmount}` : '—'}</span>
+                                                        {editingAmountUserId === user._id ? (
+                                                            <div className='flex items-center justify-center gap-1'>
+                                                                <span className='text-xs text-gray-500'>₹</span>
+                                                                <input
+                                                                    type='number'
+                                                                    value={newUserAmount}
+                                                                    onChange={e => setNewUserAmount(e.target.value)}
+                                                                    className='w-16 text-xs px-1.5 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-400'
+                                                                    autoFocus
+                                                                    min={1}
+                                                                    onKeyDown={e => { if (e.key === 'Enter') saveUserAmount(user._id); if (e.key === 'Escape') { setEditingAmountUserId(null); setNewUserAmount('') } }}
+                                                                />
+                                                                <button onClick={() => saveUserAmount(user._id)} className='p-1 bg-green-500 text-white rounded hover:bg-green-600'><Check className='size-3' /></button>
+                                                                <button onClick={() => { setEditingAmountUserId(null); setNewUserAmount('') }} className='p-1 bg-gray-200 text-gray-600 rounded hover:bg-gray-300'><X className='size-3' /></button>
+                                                            </div>
+                                                        ) : (
+                                                            <div className='flex items-center justify-center gap-1.5'>
+                                                                <span className={`font-semibold text-sm ${user.customPaymentAmount ? 'text-indigo-600' : 'text-yellow-700'}`}>
+                                                                    ₹{user.customPaymentAmount ?? paymentAmount}
+                                                                    {user.customPaymentAmount && <span className='text-xs font-normal text-indigo-400 ml-0.5'>(custom)</span>}
+                                                                </span>
+                                                                <button
+                                                                    onClick={() => { setEditingAmountUserId(user._id); setNewUserAmount(String(user.customPaymentAmount ?? paymentAmount)) }}
+                                                                    className='p-0.5 text-gray-400 hover:text-indigo-500 transition-colors'
+                                                                    title='Edit amount for this user'
+                                                                >
+                                                                    <Edit2 className='size-3' />
+                                                                </button>
+                                                                {user.customPaymentAmount && (
+                                                                    <button
+                                                                        onClick={() => resetUserAmount(user._id)}
+                                                                        className='p-0.5 text-gray-400 hover:text-red-500 transition-colors'
+                                                                        title='Reset to global amount'
+                                                                    >
+                                                                        <X className='size-3' />
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        )}
                                                     </td>
                                                     <td className='px-6 py-4 text-center'>
                                                         {user.paidResumes > 0
