@@ -98,10 +98,10 @@ const TemplateCarousel = () => {
                 20 Professional Templates
             </p>
 
-            <div className="flex gap-6 max-w-5xl mx-auto px-4">
+            <div className="flex gap-4 max-w-5xl mx-auto px-4">
 
-                {/* ── LEFT: Large preview ── */}
-                <div className="flex-1 relative">
+                {/* ── MAIN: Large preview ── */}
+                <div className="flex-1 min-w-0 relative">
                     {/* Glow */}
                     <div className="absolute inset-0 rounded-2xl blur-2xl opacity-20 transition-all duration-700"
                         style={{ backgroundColor: color }} />
@@ -121,11 +121,11 @@ const TemplateCarousel = () => {
                             </div>
                         </div>
 
-                        {/* Template preview */}
-                        <div className="bg-white overflow-hidden" style={{ height: 420 }}>
+                        {/* Template preview — shorter on mobile */}
+                        <div className="bg-white overflow-hidden" style={{ height: 'clamp(220px, 45vw, 420px)' }}>
                             <div className={`transition-all duration-280 ease-out ${slideClass}`}
                                 style={{
-                                    transform: `scale(0.42) ${animating ? (direction === 'down' ? 'translateY(16px)' : 'translateY(-16px)') : 'translateY(0)'}`,
+                                    transform: `scale(0.42)`,
                                     transformOrigin: 'top left',
                                     width: `${100 / 0.42}%`,
                                     pointerEvents: 'none',
@@ -136,38 +136,41 @@ const TemplateCarousel = () => {
                         </div>
 
                         {/* CTA overlay at bottom */}
-                        <div className="absolute bottom-0 left-0 right-0 p-4 flex items-center justify-between"
+                        <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 flex items-center justify-between"
                             style={{ background: `linear-gradient(to top, ${color}f0, transparent)` }}>
                             <div>
-                                <p className="text-white font-bold text-sm">{name} Template</p>
-                                <p className="text-white/70 text-xs">{active + 1} of {total}</p>
+                                <p className="text-white font-bold text-xs sm:text-sm">{name}</p>
+                                <p className="text-white/70 text-xs">{active + 1} / {total}</p>
                             </div>
-                            <Link to="/app"
-                                className="text-xs font-bold px-4 py-2 rounded-full bg-white shadow transition-transform hover:scale-105"
+                            <Link to={`/app?template=${id}`}
+                                className="text-xs font-bold px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white shadow transition-transform hover:scale-105"
                                 style={{ color }}>
                                 Use This →
                             </Link>
                         </div>
                     </div>
 
-                    {/* Prev / Next arrows */}
-                    <div className="flex justify-center gap-3 mt-4">
+                    {/* Controls row */}
+                    <div className="flex justify-center items-center gap-2 mt-4">
                         <button onClick={prev}
                             className="p-2 rounded-full border border-gray-200 bg-white hover:bg-gray-50 shadow-sm transition-all hover:scale-110">
                             <ChevronUp className="size-4 text-gray-600" />
                         </button>
-                        {/* Progress dots */}
-                        <div className="flex items-center gap-1">
+
+                        {/* Dots — show max 7 on mobile */}
+                        <div className="flex items-center gap-1 overflow-hidden max-w-[160px]">
                             {TEMPLATES.map((_, i) => (
-                                <button key={i} onClick={() => goTo(i, i > active ? 'down' : 'up')}
-                                    className="rounded-full transition-all duration-300"
+                                <button key={i}
+                                    onClick={() => goTo(i, i > active ? 'down' : 'up')}
+                                    className="rounded-full flex-shrink-0 transition-all duration-300"
                                     style={{
-                                        width: i === active ? 20 : 6,
-                                        height: 6,
+                                        width: i === active ? 16 : 5,
+                                        height: 5,
                                         backgroundColor: i === active ? color : '#d1d5db',
                                     }} />
                             ))}
                         </div>
+
                         <button onClick={next}
                             className="p-2 rounded-full border border-gray-200 bg-white hover:bg-gray-50 shadow-sm transition-all hover:scale-110">
                             <ChevronDown className="size-4 text-gray-600" />
@@ -175,8 +178,8 @@ const TemplateCarousel = () => {
                     </div>
                 </div>
 
-                {/* ── RIGHT: Scrollable thumbnail list ── */}
-                <div className="w-36 flex flex-col gap-2 relative">
+                {/* ── RIGHT: Thumbnail strip — hidden on mobile ── */}
+                <div className="hidden sm:flex w-28 md:w-36 flex-col gap-2 relative flex-shrink-0">
                     <div className="absolute top-0 left-0 right-0 h-6 z-10 pointer-events-none"
                         style={{ background: 'linear-gradient(to bottom, white, transparent)' }} />
                     <div className="absolute bottom-0 left-0 right-0 h-6 z-10 pointer-events-none"
@@ -185,7 +188,7 @@ const TemplateCarousel = () => {
                     <div ref={thumbListRef}
                         className="flex flex-col gap-2 overflow-y-auto max-h-[480px] pr-1 scroll-smooth"
                         style={{ scrollbarWidth: 'none' }}>
-                        {TEMPLATES.map(({ component: T, name: n, color: c, id: tid }, i) => {
+                        {TEMPLATES.map(({ component: T, name: n, color: c }, i) => {
                             const rd = dummyResumeData[i % dummyResumeData.length]
                             const isActive = i === active
                             return (
@@ -193,27 +196,25 @@ const TemplateCarousel = () => {
                                     onClick={() => goTo(i, i > active ? 'down' : 'up')}
                                     className="relative flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-300 cursor-pointer"
                                     style={{
-                                        height: 90,
+                                        height: 80,
                                         borderColor: isActive ? c : 'transparent',
                                         boxShadow: isActive ? `0 4px 16px ${c}40` : '0 1px 4px rgba(0,0,0,0.08)',
                                         transform: isActive ? 'scale(1.04)' : 'scale(1)',
                                     }}>
-                                    {/* Mini preview */}
                                     <div className="w-full h-full bg-white overflow-hidden">
                                         <div style={{
-                                            transform: 'scale(0.14)',
+                                            transform: 'scale(0.13)',
                                             transformOrigin: 'top left',
-                                            width: `${100 / 0.14}%`,
+                                            width: `${100 / 0.13}%`,
                                             pointerEvents: 'none',
                                             userSelect: 'none',
                                         }}>
                                             <T data={rd} accentColor={c} />
                                         </div>
                                     </div>
-                                    {/* Name label */}
-                                    <div className="absolute bottom-0 left-0 right-0 px-1.5 py-1 text-center"
+                                    <div className="absolute bottom-0 left-0 right-0 px-1 py-0.5 text-center"
                                         style={{ background: isActive ? c : 'rgba(0,0,0,0.45)' }}>
-                                        <span className="text-white text-[9px] font-semibold truncate block">{n}</span>
+                                        <span className="text-white text-[8px] font-semibold truncate block">{n}</span>
                                     </div>
                                 </button>
                             )

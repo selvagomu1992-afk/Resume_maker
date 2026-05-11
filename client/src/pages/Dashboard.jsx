@@ -1,7 +1,7 @@
 import { FilePenLineIcon, LoaderCircleIcon, PencilIcon, PlusIcon, TrashIcon, UploadCloud, UploadCloudIcon, XIcon } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { dummyResumeData } from '../assets/assets'
-import {useNavigate} from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import api from '../configs/api'
 import toast from 'react-hot-toast'
@@ -22,6 +22,16 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(false)
 
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+
+  // If user came from carousel with ?template=xxx, auto-open create modal
+  const preselectedTemplate = searchParams.get('template')
+
+  useEffect(() => {
+    if (preselectedTemplate) {
+      setShowCreateResume(true)
+    }
+  }, [preselectedTemplate])
 
   const loadAllResumes = async () =>{
     try {
@@ -39,6 +49,15 @@ const Dashboard = () => {
     setAllResumes([...allResumes, data.resume])
     setTitle('')
     setShowCreateResume(false)
+
+    // If a template was preselected from the carousel, apply it immediately
+    if (preselectedTemplate) {
+      await api.put('/api/resumes/update', {
+        resumeId: data.resume._id,
+        resumeData: JSON.stringify({ template: preselectedTemplate })
+      }, { headers: { Authorization: token } })
+    }
+
     navigate(`/app/builder/${data.resume._id}`)
    } catch (error) {
     toast.error(error?.response?.data?.message || error.message)
@@ -135,7 +154,12 @@ const Dashboard = () => {
         {showCreateResume && (
           <form onSubmit={createResume} onClick={()=> setShowCreateResume(false)} className='fixed inset-0 bg-black/70 backdrop-blur bg-opacity-50 z-10 flex items-center justify-center'>
             <div onClick={e => e.stopPropagation()} className='relative bg-slate-50 border shadow-md rounded-lg w-full max-w-sm p-6'>
-              <h2 className='text-xl font-bold mb-4'>Create a Resume</h2>
+              <h2 className='text-xl font-bold mb-1'>Create a Resume</h2>
+              {preselectedTemplate && (
+                <p className='text-sm text-indigo-600 font-medium mb-4 capitalize'>
+                  Template: <span className='font-bold'>{preselectedTemplate.replace('-', ' ')}</span>
+                </p>
+              )}
               <input onChange={(e)=>setTitle(e.target.value)} value={title} type="text" placeholder='Enter resume title' className='w-full px-4 py-2 mb-4 focus:border-indigo-600 ring-indigo-600' required/>
 
               <button className='w-full py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors'>Create Resume</button>
