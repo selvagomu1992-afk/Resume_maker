@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { dummyResumeData } from '../../assets/assets'
 
-// Import all templates
 import ClassicTemplate from '../templates/ClassicTemplate'
 import ModernTemplate from '../templates/ModernTemplate'
 import MinimalTemplate from '../templates/MinimalTemplate'
@@ -47,123 +46,123 @@ const TEMPLATES = [
     { id: 'gradient',      name: 'Gradient',       component: GradientTemplate,      color: '#7C3AED' },
 ]
 
-// Cycle through dummy resumes for variety
-const getResumeData = (index) => dummyResumeData[index % dummyResumeData.length]
+// Duplicate for seamless infinite loop
+const ITEMS = [...TEMPLATES, ...TEMPLATES]
+
+const CARD_WIDTH = 220   // px
+const CARD_GAP   = 20    // px
+const STEP       = CARD_WIDTH + CARD_GAP
 
 const TemplateCarousel = () => {
-    const [current, setCurrent] = useState(0)
-    const [isHovered, setIsHovered] = useState(false)
-    const autoRef = useRef(null)
+    const trackRef  = useRef(null)
+    const rafRef    = useRef(null)
+    const posRef    = useRef(0)
+    const pausedRef = useRef(false)
+    const [hoveredIdx, setHoveredIdx] = useState(null)
 
-    const total = TEMPLATES.length
+    const totalWidth = TEMPLATES.length * STEP
 
-    const prev = () => setCurrent(c => (c - 1 + total) % total)
-    const next = () => setCurrent(c => (c + 1) % total)
-
-    // Auto-advance every 3s unless hovered
+    // Animate
     useEffect(() => {
-        if (isHovered) return
-        autoRef.current = setInterval(next, 3000)
-        return () => clearInterval(autoRef.current)
-    }, [isHovered, current])
+        const speed = 0.5 // px per frame
 
-    // Visible: current-1, current, current+1 (3 cards)
-    const getVisible = () => {
-        return [-1, 0, 1].map(offset => {
-            const idx = (current + offset + total) % total
-            return { ...TEMPLATES[idx], offset, idx }
-        })
-    }
+        const tick = () => {
+            if (!pausedRef.current) {
+                posRef.current += speed
+                // Reset seamlessly when we've scrolled one full set
+                if (posRef.current >= totalWidth) {
+                    posRef.current -= totalWidth
+                }
+                if (trackRef.current) {
+                    trackRef.current.style.transform = `translateX(-${posRef.current}px)`
+                }
+            }
+            rafRef.current = requestAnimationFrame(tick)
+        }
 
-    const visible = getVisible()
+        rafRef.current = requestAnimationFrame(tick)
+        return () => cancelAnimationFrame(rafRef.current)
+    }, [totalWidth])
 
     return (
-        <div className="w-full mt-16 mb-4">
-            <p className="text-center text-sm text-slate-500 mb-6 font-medium uppercase tracking-widest">
-                19 Professional Templates
+        <div className="w-full mt-16 mb-4 overflow-hidden">
+            <p className="text-center text-xs text-slate-400 mb-6 font-semibold uppercase tracking-widest">
+                20 Professional Templates — Pick yours
             </p>
 
+            {/* Track */}
             <div
-                className="relative flex items-center justify-center gap-4 overflow-hidden"
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
+                className="relative"
+                onMouseEnter={() => { pausedRef.current = true }}
+                onMouseLeave={() => { pausedRef.current = false; setHoveredIdx(null) }}
             >
-                {/* Prev button */}
-                <button
-                    onClick={prev}
-                    className="absolute left-2 z-20 p-2 bg-white rounded-full shadow-md hover:shadow-lg border border-gray-200 hover:bg-indigo-50 transition-all"
-                >
-                    <ChevronLeft className="size-5 text-gray-600" />
-                </button>
+                {/* Left fade */}
+                <div className="absolute left-0 top-0 bottom-0 w-16 z-10 pointer-events-none"
+                    style={{ background: 'linear-gradient(to right, white, transparent)' }} />
+                {/* Right fade */}
+                <div className="absolute right-0 top-0 bottom-0 w-16 z-10 pointer-events-none"
+                    style={{ background: 'linear-gradient(to left, white, transparent)' }} />
 
-                {/* Cards */}
-                <div className="flex items-center justify-center gap-4 w-full max-w-5xl px-12">
-                    {visible.map(({ component: Template, name, color, offset, idx }) => {
-                        const resumeData = getResumeData(idx)
-                        const isCenter = offset === 0
+                <div
+                    ref={trackRef}
+                    className="flex will-change-transform"
+                    style={{ gap: CARD_GAP, paddingLeft: CARD_GAP }}
+                >
+                    {ITEMS.map(({ component: Template, name, color, id }, i) => {
+                        const resumeData = dummyResumeData[i % dummyResumeData.length]
+                        const isHovered = hoveredIdx === i
 
                         return (
                             <div
-                                key={idx}
-                                className={`relative flex-shrink-0 transition-all duration-500 cursor-pointer rounded-xl overflow-hidden border-2 shadow-lg
-                                    ${isCenter
-                                        ? 'w-72 scale-100 z-10 border-indigo-400 shadow-indigo-200'
-                                        : 'w-52 scale-90 opacity-60 z-0 border-gray-200'
-                                    }`}
-                                onClick={() => setCurrent(idx)}
-                                style={isCenter ? { boxShadow: `0 8px 32px ${color}40` } : {}}
+                                key={i}
+                                className="relative flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300"
+                                style={{
+                                    width: CARD_WIDTH,
+                                    height: 300,
+                                    boxShadow: isHovered
+                                        ? `0 16px 40px ${color}50`
+                                        : '0 2px 12px rgba(0,0,0,0.08)',
+                                    transform: isHovered ? 'translateY(-6px) scale(1.03)' : 'translateY(0) scale(1)',
+                                    border: isHovered ? `2px solid ${color}` : '2px solid transparent',
+                                }}
+                                onMouseEnter={() => setHoveredIdx(i)}
+                                onMouseLeave={() => setHoveredIdx(null)}
                             >
-                                {/* Template name badge */}
-                                <div
-                                    className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full text-white text-xs font-semibold shadow"
-                                    style={{ backgroundColor: color }}
-                                >
-                                    {name}
+                                {/* Template preview — scaled down */}
+                                <div className="w-full h-full bg-white overflow-hidden">
+                                    <div style={{
+                                        transform: 'scale(0.21)',
+                                        transformOrigin: 'top left',
+                                        width: `${100 / 0.21}%`,
+                                        pointerEvents: 'none',
+                                        userSelect: 'none',
+                                    }}>
+                                        <Template data={resumeData} accentColor={color} />
+                                    </div>
                                 </div>
 
-                                {/* Scaled-down template preview */}
-                                <div
-                                    className="w-full bg-white overflow-hidden"
-                                    style={{ height: isCenter ? '380px' : '280px' }}
-                                >
-                                    <div
-                                        style={{
-                                            transform: `scale(${isCenter ? 0.36 : 0.26})`,
-                                            transformOrigin: 'top left',
-                                            width: `${100 / (isCenter ? 0.36 : 0.26)}%`,
-                                            pointerEvents: 'none',
-                                            userSelect: 'none',
-                                        }}
+                                {/* Hover overlay */}
+                                <div className={`absolute inset-0 flex flex-col items-center justify-end pb-4 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                                    style={{ background: `linear-gradient(to top, ${color}ee 0%, transparent 60%)` }}>
+                                    <p className="text-white font-bold text-sm mb-2">{name}</p>
+                                    <Link
+                                        to="/app"
+                                        className="text-xs font-semibold px-4 py-1.5 rounded-full bg-white transition-colors"
+                                        style={{ color }}
                                     >
-                                        <Template
-                                            data={{ ...resumeData, template: TEMPLATES.find(t => t.component === Template)?.id }}
-                                            accentColor={color}
-                                        />
-                                    </div>
+                                        Use Template →
+                                    </Link>
+                                </div>
+
+                                {/* Name badge (always visible) */}
+                                <div className={`absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full text-white transition-opacity duration-300 ${isHovered ? 'opacity-0' : 'opacity-100'}`}
+                                    style={{ backgroundColor: color + 'dd' }}>
+                                    {name}
                                 </div>
                             </div>
                         )
                     })}
                 </div>
-
-                {/* Next button */}
-                <button
-                    onClick={next}
-                    className="absolute right-2 z-20 p-2 bg-white rounded-full shadow-md hover:shadow-lg border border-gray-200 hover:bg-indigo-50 transition-all"
-                >
-                    <ChevronRight className="size-5 text-gray-600" />
-                </button>
-            </div>
-
-            {/* Dot indicators */}
-            <div className="flex justify-center gap-1.5 mt-5">
-                {TEMPLATES.map((_, i) => (
-                    <button
-                        key={i}
-                        onClick={() => setCurrent(i)}
-                        className={`rounded-full transition-all duration-300 ${i === current ? 'w-6 h-2 bg-indigo-500' : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'}`}
-                    />
-                ))}
             </div>
         </div>
     )
