@@ -1,6 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import TemplateCarousel from './TemplateCarousel'
 
 const Hero = () => {
 
@@ -120,6 +121,9 @@ const Hero = () => {
                     />
                 ))}
             </div>
+
+            {/* Template Carousel */}
+            <TemplateCarousel />
         </div>
     </div>
     <style>
