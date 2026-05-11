@@ -31,6 +31,7 @@ const ResumeBuilder = () => {
 
   const [isPaid, setIsPaid] = useState(false)
   const [pageReady, setPageReady] = useState(false)
+  const [remainingDownloads, setRemainingDownloads] = useState(3)
 
   const [resumeData, setResumeData] = useState({
     _id: '',
@@ -56,6 +57,12 @@ const ResumeBuilder = () => {
       if (data.resume) {
         setResumeData(data.resume)
         setIsPaid(!!data.resume.isPaid)
+        // Calculate remaining downloads
+        if (data.resume.isPaid) {
+          const max = data.resume.maxDownloads || 3
+          const used = data.resume.downloadCount || 0
+          setRemainingDownloads(max - used)
+        }
         document.title = data.resume.title;
         return data.resume
       }
@@ -103,6 +110,7 @@ const ResumeBuilder = () => {
           const { data } = await api.post('/api/payment/verify', { orderId, resumeId })
           if (data.isPaid) {
             setIsPaid(true)
+            setRemainingDownloads(3)
             toast.success('Payment successful! Click Download PDF to save your resume.')
           } else {
             toast.error('Payment not completed. Please try again.')
@@ -149,6 +157,21 @@ const ResumeBuilder = () => {
 
     const toastId = toast.loading('Generating PDF...')
     try {
+      // Record the download — increments count, resets isPaid after max downloads
+      const { data: dlData } = await api.post(
+        `/api/resumes/download/${resumeId}`,
+        {},
+        { headers: { Authorization: token } }
+      )
+
+      // Update remaining count in UI
+      setRemainingDownloads(dlData.remaining)
+
+      // If exhausted, flip isPaid off so Pay button shows again
+      if (dlData.exhausted) {
+        setIsPaid(false)
+        toast.success('Last download used. Pay again to download more.', { id: toastId, duration: 4000 })
+      }
       const A4_WIDTH_PX = 794   // A4 at 96dpi
       const PIXEL_RATIO = 2     // 2x for crisp quality
 
@@ -373,7 +396,11 @@ const ResumeBuilder = () => {
               {pageReady && (
                 isPaid ? (
                   <button onClick={downloadResume} className='flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors'>
-                    <DownloadIcon className='size-3.5' /> Download PDF
+                    <DownloadIcon className='size-3.5' />
+                    Download PDF
+                    <span className='bg-white/25 text-white text-xs px-1.5 py-0.5 rounded-full font-bold ml-0.5'>
+                      {remainingDownloads} left
+                    </span>
                   </button>
                 ) : (
                   <button onClick={goToPayment} className='flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors'>

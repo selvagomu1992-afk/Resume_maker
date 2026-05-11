@@ -6,6 +6,8 @@ const ResumeSchema = new mongoose.Schema({
     public: { type: Boolean, default: false },
     isPaid: { type: Boolean, default: false },
     paidOrderId: { type: String, default: '' },
+    downloadCount: { type: Number, default: 0 },
+    maxDownloads: { type: Number, default: 3 },
     template: { type: String, default: "classic" },
     accent_color: { type: String, default: "#3B82F6" },
     professional_summary: { type: String, default: '' },
