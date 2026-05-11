@@ -239,7 +239,17 @@ const ResumeBuilder = () => {
       toast.error('Failed: ' + err.message, { id: toastId })
     }
   }
+  const [paymentAmount, setPaymentAmount] = useState(49)
+
+  const [paymentAmount, setPaymentAmount] = useState(49)
   const goToPayment = () => navigate(`/payment/${resumeId}`)
+
+  // Load current payment price from server
+  useEffect(() => {
+    api.get('/api/admin/payment-amount').then(({ data }) => {
+      if (data.amount) setPaymentAmount(data.amount)
+    }).catch(() => {})
+  }, [])
 
   const saveResume = async () => {
     try {
@@ -368,7 +378,7 @@ const ResumeBuilder = () => {
                   </button>
                 ) : (
                   <button onClick={goToPayment} className='flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors'>
-                    <span className='text-sm leading-none'>₹49</span> Download
+                    <span className='text-sm leading-none'>₹{paymentAmount}</span> Download
                   </button>
                 )
               )}
