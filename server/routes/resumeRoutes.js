@@ -22,13 +22,18 @@ resumeRouter.post('/download/:resumeId', protect, async (req, res) => {
         if (!resume) return res.status(404).json({ message: 'Resume not found' });
         if (!resume.isPaid) return res.status(403).json({ message: 'Not paid' });
 
+        // Get user's custom max or fall back to global env
+        const User = (await import('../models/User.js')).default;
+        const user = await User.findById(req.userId).lean();
+        const globalMax = parseInt(process.env.MAX_DOWNLOADS || '3', 10);
+        const max = user?.customMaxDownloads ?? globalMax;
+
         const newCount = (resume.downloadCount || 0) + 1;
-        const max = resume.maxDownloads || 3;
         const exhausted = newCount >= max;
 
         await Resume.findByIdAndUpdate(resumeId, {
-            downloadCount: newCount,
-            ...(exhausted ? { isPaid: false, downloadCount: 0 } : {})
+            downloadCount: exhausted ? 0 : newCount,
+            ...(exhausted ? { isPaid: false } : {})
         });
 
         return res.json({

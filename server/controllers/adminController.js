@@ -37,6 +37,7 @@ export const getAllUsers = async (req, res) => {
                     paidResumes: resumes.filter(r => r.isPaid).length,
                     paidAmount: resumes.filter(r => r.isPaid).length * effectiveAmount,
                     customPaymentAmount: user.customPaymentAmount,  // null = using global
+                    customMaxDownloads: user.customMaxDownloads,    // null = using global
                     resumes: resumes.map(r => ({ _id: r._id, title: r.title, isPaid: r.isPaid })),
                 };
             })
@@ -124,6 +125,52 @@ export const updateUserPayment = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 }
+// GET /api/admin/max-downloads
+export const getMaxDownloads = async (req, res) => {
+    return res.json({ success: true, maxDownloads: parseInt(process.env.MAX_DOWNLOADS || '3', 10) });
+}
+
+// PUT /api/admin/max-downloads
+export const updateMaxDownloads = async (req, res) => {
+    try {
+        const { maxDownloads } = req.body;
+        if (!maxDownloads || isNaN(maxDownloads) || parseInt(maxDownloads) < 1) {
+            return res.status(400).json({ message: 'Invalid value' });
+        }
+        process.env.MAX_DOWNLOADS = String(parseInt(maxDownloads));
+        try {
+            const envPath = new URL('../.env', import.meta.url).pathname;
+            let envContent = fs.readFileSync(envPath, 'utf8');
+            if (envContent.includes('MAX_DOWNLOADS=')) {
+                envContent = envContent.replace(/MAX_DOWNLOADS=.*/g, `MAX_DOWNLOADS=${maxDownloads}`);
+            } else {
+                envContent += `\nMAX_DOWNLOADS=${maxDownloads}`;
+            }
+            fs.writeFileSync(envPath, envContent);
+        } catch (e) {
+            console.warn('Could not persist MAX_DOWNLOADS to .env:', e.message);
+        }
+        return res.json({ success: true, maxDownloads: parseInt(maxDownloads) });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+// PUT /api/admin/user/:userId/max-downloads
+export const updateUserMaxDownloads = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { maxDownloads } = req.body;
+        const update = maxDownloads === null
+            ? { customMaxDownloads: null }
+            : { customMaxDownloads: parseInt(maxDownloads) };
+        await User.findByIdAndUpdate(userId, update);
+        return res.json({ success: true, customMaxDownloads: update.customMaxDownloads });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
 // DELETE /api/admin/user/:userId — delete user and all their resumes
 export const deleteUser = async (req, res) => {
     try {
