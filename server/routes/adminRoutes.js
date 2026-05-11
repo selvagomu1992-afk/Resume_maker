@@ -1,5 +1,5 @@
 import express from 'express'
-import { adminLogin, getAllUsers, getStats, getPaymentAmount, updatePaymentAmount, downloadPayments, updateUserPayment, updateUserAmount } from '../controllers/adminController.js'
+import { adminLogin, getAllUsers, getStats, getPaymentAmount, updatePaymentAmount, downloadPayments, updateUserPayment, updateUserAmount, deleteUser } from '../controllers/adminController.js'
 import adminProtect from '../middlewares/adminMiddleware.js'
 
 const adminRouter = express.Router()
@@ -12,5 +12,6 @@ adminRouter.put('/payment-amount', adminProtect, updatePaymentAmount)
 adminRouter.get('/download-payments', adminProtect, downloadPayments)
 adminRouter.put('/user/:userId/payment', adminProtect, updateUserPayment)
 adminRouter.put('/user/:userId/amount', adminProtect, updateUserAmount)
+adminRouter.delete('/user/:userId', adminProtect, deleteUser)
 
 export default adminRouter

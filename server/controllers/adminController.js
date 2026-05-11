@@ -124,6 +124,18 @@ export const updateUserPayment = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 }
+// DELETE /api/admin/user/:userId — delete user and all their resumes
+export const deleteUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        await Resume.deleteMany({ userId });
+        await User.findByIdAndDelete(userId);
+        return res.json({ success: true, message: 'User and all resumes deleted' });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
 // PUT /api/admin/user/:userId/amount — set custom payment amount for a user
 export const updateUserAmount = async (req, res) => {
     try {

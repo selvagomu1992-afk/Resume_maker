@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Users, FileText, CreditCard, LogOut, ShieldCheck, Search, IndianRupee, Download, Edit2, Check, X, ChevronDown, ChevronUp } from 'lucide-react'
+import { Users, FileText, CreditCard, LogOut, ShieldCheck, Search, IndianRupee, Download, Edit2, Check, X, ChevronDown, ChevronUp, Trash2 } from 'lucide-react'
 import api from '../configs/api'
 import toast from 'react-hot-toast'
 
@@ -112,6 +112,19 @@ const AdminDashboard = () => {
         }
     }
 
+    const deleteUser = async (userId, userName) => {
+        if (!window.confirm(`Delete user "${userName}" and all their resumes? This cannot be undone.`)) return
+        try {
+            await api.delete(`/api/admin/user/${userId}`, { headers })
+            setUsers(prev => prev.filter(u => u._id !== userId))
+            const statsRes = await api.get('/api/admin/stats', { headers })
+            setStats(statsRes.data.stats)
+            toast.success('User deleted')
+        } catch (err) {
+            toast.error(err?.response?.data?.message || 'Failed to delete user')
+        }
+    }
+
     const downloadCSV = () => {
         fetch(`${api.defaults.baseURL || ''}/api/admin/download-payments`, { headers: { Authorization: adminToken } })
             .then(res => res.blob())
@@ -218,11 +231,12 @@ const AdminDashboard = () => {
                                         <th className='px-6 py-3 text-center'>Amount</th>
                                         <th className='px-6 py-3 text-center'>Status</th>
                                         <th className='px-6 py-3 text-center'>Edit</th>
+                                        <th className='px-6 py-3 text-center'>Delete</th>
                                     </tr>
                                 </thead>
                                 <tbody className='divide-y divide-gray-100'>
                                     {filtered.length === 0 ? (
-                                        <tr><td colSpan={9} className='text-center py-10 text-gray-400'>No users found</td></tr>
+                                        <tr><td colSpan={10} className='text-center py-10 text-gray-400'>No users found</td></tr>
                                     ) : (
                                         filtered.map((user, index) => (
                                             <React.Fragment key={user._id}>
@@ -297,12 +311,21 @@ const AdminDashboard = () => {
                                                             </button>
                                                         )}
                                                     </td>
+                                                    <td className='px-6 py-4 text-center'>
+                                                        <button
+                                                            onClick={() => deleteUser(user._id, user.name)}
+                                                            className='flex items-center gap-1 mx-auto px-2.5 py-1 text-xs bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors'
+                                                            title='Delete user and all resumes'
+                                                        >
+                                                            <Trash2 className='size-3' /> Delete
+                                                        </button>
+                                                    </td>
                                                 </tr>
 
                                                 {/* Expanded resume list for this user */}
                                                 {expandedUser === user._id && user.resumes && (
                                                     <tr>
-                                                        <td colSpan={9} className='px-6 py-3 bg-indigo-50/50'>
+                                                        <td colSpan={10} className='px-6 py-3 bg-indigo-50/50'>
                                                             <p className='text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide'>Resumes — toggle payment status</p>
                                                             <div className='flex flex-wrap gap-2'>
                                                                 {user.resumes.map(resume => (
