@@ -10,6 +10,8 @@ const AdminDashboard = () => {
     const [stats, setStats] = useState({ totalUsers: 0, totalResumes: 0, paidResumes: 0, totalRevenue: 0 })
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState('')
+    const [page, setPage] = useState(1)
+    const PAGE_SIZE = 10
 
     // Global settings
     const [paymentAmount, setPaymentAmount] = useState(49)
@@ -166,6 +168,11 @@ const AdminDashboard = () => {
         u.email.toLowerCase().includes(search.toLowerCase())
     )
 
+    const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+    const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+    const handleSearch = (val) => { setSearch(val); setPage(1) }
+
     const InlineEdit = ({ value, onSave, onCancel, onChange, placeholder, prefix }) => (
         <div className='flex items-center justify-center gap-1'>
             {prefix && <span className='text-xs text-gray-500'>{prefix}</span>}
@@ -250,11 +257,16 @@ const AdminDashboard = () => {
                 {/* Users Table */}
                 <div className='bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden'>
                     <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-4 border-b border-gray-100'>
-                        <h2 className='text-base font-semibold text-gray-800'>All Users</h2>
+                        <h2 className='text-base font-semibold text-gray-800'>
+                            All Users
+                            <span className='ml-2 text-xs font-normal text-gray-400'>
+                                ({filtered.length} total)
+                            </span>
+                        </h2>
                         <div className='flex items-center gap-3'>
                             <div className='flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-2 w-full sm:w-56'>
                                 <Search className='size-4 text-gray-400 shrink-0' />
-                                <input type='text' placeholder='Search...' value={search} onChange={e => setSearch(e.target.value)}
+                                <input type='text' placeholder='Search...' value={search} onChange={e => handleSearch(e.target.value)}
                                     className='bg-transparent border-none outline-none ring-0 text-sm w-full' />
                             </div>
                             <button onClick={downloadCSV}
@@ -289,10 +301,10 @@ const AdminDashboard = () => {
                                 <tbody className='divide-y divide-gray-100'>
                                     {filtered.length === 0 ? (
                                         <tr><td colSpan={11} className='text-center py-10 text-gray-400'>No users found</td></tr>
-                                    ) : filtered.map((user, index) => (
+                                    ) : paginated.map((user, index) => (
                                         <React.Fragment key={user._id}>
                                             <tr className='hover:bg-gray-50 transition-colors'>
-                                                <td className='px-4 py-3 text-gray-400 text-xs'>{index + 1}</td>
+                                                <td className='px-4 py-3 text-gray-400 text-xs'>{(page - 1) * PAGE_SIZE + index + 1}</td>
                                                 <td className='px-4 py-3 font-medium text-gray-800'>{user.name}</td>
                                                 <td className='px-4 py-3 text-gray-500 text-xs'>{user.email}</td>
                                                 <td className='px-4 py-3 text-gray-500 text-xs'>
@@ -401,6 +413,43 @@ const AdminDashboard = () => {
                                     ))}
                                 </tbody>
                             </table>
+                        </div>
+                    )}
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className='flex items-center justify-between px-6 py-4 border-t border-gray-100 bg-gray-50'>
+                            <p className='text-xs text-gray-500'>
+                                Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length} users
+                            </p>
+                            <div className='flex items-center gap-1'>
+                                <button
+                                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                                    disabled={page === 1}
+                                    className='px-3 py-1.5 text-xs border border-gray-200 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors'
+                                >
+                                    ← Prev
+                                </button>
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                                    <button
+                                        key={p}
+                                        onClick={() => setPage(p)}
+                                        className={`w-8 h-8 text-xs rounded-lg border transition-colors ${p === page
+                                            ? 'bg-indigo-600 text-white border-indigo-600'
+                                            : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        {p}
+                                    </button>
+                                ))}
+                                <button
+                                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={page === totalPages}
+                                    className='px-3 py-1.5 text-xs border border-gray-200 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors'
+                                >
+                                    Next →
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
