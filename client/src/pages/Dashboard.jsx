@@ -6,9 +6,35 @@ import api from '../configs/api'
 import toast from 'react-hot-toast'
 import pdfToText from 'react-pdftotext'
 
+const TEMPLATE_OPTIONS = [
+  { id: 'classic', name: 'Classic', color: '#3B82F6' },
+  { id: 'modern', name: 'Modern', color: '#6366F1' },
+  { id: 'gradient', name: 'Gradient', color: '#7C3AED' },
+  { id: 'executive', name: 'Executive', color: '#8B5CF6' },
+  { id: 'creative', name: 'Creative', color: '#EC4899' },
+  { id: 'elegant', name: 'Elegant', color: '#6B7280' },
+  { id: 'infographic', name: 'Infographic', color: '#EF4444' },
+  { id: 'tech', name: 'Tech', color: '#0EA5E9' },
+  { id: 'split', name: 'Split', color: '#D97706' },
+  { id: 'card', name: 'Card', color: '#0891B2' },
+  { id: 'bold', name: 'Bold', color: '#DC2626' },
+  { id: 'professional', name: 'Professional', color: '#1D4ED8' },
+  { id: 'timeline', name: 'Timeline', color: '#F59E0B' },
+  { id: 'minimal-image', name: 'Minimal Image', color: '#14B8A6' },
+  { id: 'minimal', name: 'Minimal', color: '#10B981' },
+  { id: 'nordic', name: 'Nordic', color: '#475569' },
+  { id: 'academic', name: 'Academic', color: '#7C3AED' },
+  { id: 'compact', name: 'Compact', color: '#059669' },
+  { id: 'corner', name: 'Corner', color: '#BE185D' },
+  { id: 'strip', name: 'Strip', color: '#16A34A' },
+]
+
 const Dashboard = () => {
 
   const {user, token} = useSelector(state => state.auth)
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const preselectedTemplate = searchParams.get('template')
 
   const colors = ["#9333ea", "#d97706", "#dc2626", "#0284c7", "#16a34a"]
   const [allResumes, setAllResumes] = useState([])
@@ -17,39 +43,10 @@ const Dashboard = () => {
   const [title, setTitle] = useState('')
   const [resume, setResume] = useState(null)
   const [editResumeId, setEditResumeId] = useState('')
-
   const [isLoading, setIsLoading] = useState(false)
   const [selectedTemplate, setSelectedTemplate] = useState(preselectedTemplate || 'classic')
 
-  const TEMPLATE_OPTIONS = [
-    { id: 'classic', name: 'Classic', color: '#3B82F6' },
-    { id: 'modern', name: 'Modern', color: '#6366F1' },
-    { id: 'gradient', name: 'Gradient', color: '#7C3AED' },
-    { id: 'executive', name: 'Executive', color: '#8B5CF6' },
-    { id: 'creative', name: 'Creative', color: '#EC4899' },
-    { id: 'elegant', name: 'Elegant', color: '#6B7280' },
-    { id: 'infographic', name: 'Infographic', color: '#EF4444' },
-    { id: 'tech', name: 'Tech', color: '#0EA5E9' },
-    { id: 'split', name: 'Split', color: '#D97706' },
-    { id: 'card', name: 'Card', color: '#0891B2' },
-    { id: 'bold', name: 'Bold', color: '#DC2626' },
-    { id: 'professional', name: 'Professional', color: '#1D4ED8' },
-    { id: 'timeline', name: 'Timeline', color: '#F59E0B' },
-    { id: 'minimal-image', name: 'Minimal Image', color: '#14B8A6' },
-    { id: 'minimal', name: 'Minimal', color: '#10B981' },
-    { id: 'nordic', name: 'Nordic', color: '#475569' },
-    { id: 'academic', name: 'Academic', color: '#7C3AED' },
-    { id: 'compact', name: 'Compact', color: '#059669' },
-    { id: 'corner', name: 'Corner', color: '#BE185D' },
-    { id: 'strip', name: 'Strip', color: '#16A34A' },
-  ]
-
-  const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-
   // If user came from carousel with ?template=xxx, auto-open create modal
-  const preselectedTemplate = searchParams.get('template')
-
   useEffect(() => {
     if (preselectedTemplate) {
       setShowCreateResume(true)
