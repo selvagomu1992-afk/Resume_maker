@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux'
 import api from '../configs/api'
 import toast from 'react-hot-toast'
 import pdfToText from 'react-pdftotext'
+import ResumePreview from '../components/ResumePreview'
 
 const Dashboard = () => {
 
@@ -20,6 +21,30 @@ const Dashboard = () => {
   const [editResumeId, setEditResumeId] = useState('')
 
   const [isLoading, setIsLoading] = useState(false)
+  const [selectedTemplate, setSelectedTemplate] = useState(preselectedTemplate || 'classic')
+
+  const TEMPLATE_OPTIONS = [
+    { id: 'classic', name: 'Classic', color: '#3B82F6' },
+    { id: 'modern', name: 'Modern', color: '#6366F1' },
+    { id: 'gradient', name: 'Gradient', color: '#7C3AED' },
+    { id: 'executive', name: 'Executive', color: '#8B5CF6' },
+    { id: 'creative', name: 'Creative', color: '#EC4899' },
+    { id: 'elegant', name: 'Elegant', color: '#6B7280' },
+    { id: 'infographic', name: 'Infographic', color: '#EF4444' },
+    { id: 'tech', name: 'Tech', color: '#0EA5E9' },
+    { id: 'split', name: 'Split', color: '#D97706' },
+    { id: 'card', name: 'Card', color: '#0891B2' },
+    { id: 'bold', name: 'Bold', color: '#DC2626' },
+    { id: 'professional', name: 'Professional', color: '#1D4ED8' },
+    { id: 'timeline', name: 'Timeline', color: '#F59E0B' },
+    { id: 'minimal-image', name: 'Minimal Image', color: '#14B8A6' },
+    { id: 'minimal', name: 'Minimal', color: '#10B981' },
+    { id: 'nordic', name: 'Nordic', color: '#475569' },
+    { id: 'academic', name: 'Academic', color: '#7C3AED' },
+    { id: 'compact', name: 'Compact', color: '#059669' },
+    { id: 'corner', name: 'Corner', color: '#BE185D' },
+    { id: 'strip', name: 'Strip', color: '#16A34A' },
+  ]
 
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -51,10 +76,10 @@ const Dashboard = () => {
     setShowCreateResume(false)
 
     // If a template was preselected from the carousel, apply it immediately
-    if (preselectedTemplate) {
+    if (selectedTemplate) {
       await api.put('/api/resumes/update', {
         resumeId: data.resume._id,
-        resumeData: JSON.stringify({ template: preselectedTemplate })
+        resumeData: JSON.stringify({ template: selectedTemplate })
       }, { headers: { Authorization: token } })
     }
 
@@ -152,17 +177,58 @@ const Dashboard = () => {
       </div>
 
         {showCreateResume && (
-          <form onSubmit={createResume} onClick={()=> setShowCreateResume(false)} className='fixed inset-0 bg-black/70 backdrop-blur bg-opacity-50 z-10 flex items-center justify-center'>
-            <div onClick={e => e.stopPropagation()} className='relative bg-slate-50 border shadow-md rounded-lg w-full max-w-sm p-6'>
-              <h2 className='text-xl font-bold mb-1'>Create a Resume</h2>
-              {preselectedTemplate && (
-                <p className='text-sm text-indigo-600 font-medium mb-4 capitalize'>
-                  Template: <span className='font-bold'>{preselectedTemplate.replace('-', ' ')}</span>
-                </p>
-              )}
-              <input onChange={(e)=>setTitle(e.target.value)} value={title} type="text" placeholder='Enter resume title' className='w-full px-4 py-2 mb-4 focus:border-indigo-600 ring-indigo-600' required/>
+          <form onSubmit={createResume} onClick={()=> setShowCreateResume(false)} className='fixed inset-0 bg-black/70 backdrop-blur bg-opacity-50 z-10 flex items-center justify-center p-4'>
+            <div onClick={e => e.stopPropagation()} className='relative bg-white border shadow-xl rounded-2xl w-full max-w-4xl flex overflow-hidden max-h-[90vh]'>
 
-              <button className='w-full py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors'>Create Resume</button>
+              {/* Left — Form + Template Grid */}
+              <div className='flex-1 p-6 overflow-y-auto'>
+                <h2 className='text-xl font-bold mb-1'>Create a Resume</h2>
+                <p className='text-sm text-gray-500 mb-4'>Choose a template and enter a title</p>
+
+                <input onChange={(e)=>setTitle(e.target.value)} value={title} type="text" placeholder='Enter resume title' className='w-full px-4 py-2.5 mb-4 focus:border-indigo-600 ring-indigo-600 text-sm' required/>
+
+                {/* Template grid */}
+                <p className='text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2'>Select Template</p>
+                <div className='grid grid-cols-4 sm:grid-cols-5 gap-2 mb-4 max-h-[240px] overflow-y-auto pr-1'>
+                  {TEMPLATE_OPTIONS.map(t => (
+                    <button
+                      key={t.id}
+                      type='button'
+                      onClick={() => setSelectedTemplate(t.id)}
+                      className={`relative p-2 rounded-lg border-2 text-center transition-all ${selectedTemplate === t.id ? 'border-indigo-500 bg-indigo-50 scale-105' : 'border-gray-200 hover:border-gray-300'}`}
+                    >
+                      <div className='w-full h-8 rounded mb-1' style={{ backgroundColor: t.color + '30' }}>
+                        <div className='w-full h-2 rounded-t' style={{ backgroundColor: t.color }} />
+                      </div>
+                      <span className='text-xs font-medium text-gray-700 block truncate'>{t.name}</span>
+                      {selectedTemplate === t.id && (
+                        <div className='absolute -top-1 -right-1 w-4 h-4 bg-indigo-500 rounded-full flex items-center justify-center'>
+                          <span className='text-white text-xs'>✓</span>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                <button className='w-full py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium'>
+                  Create Resume
+                </button>
+              </div>
+
+              {/* Right — Live Preview */}
+              <div className='hidden md:block w-72 bg-gray-100 border-l border-gray-200 p-3 overflow-hidden'>
+                <p className='text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 text-center'>Preview</p>
+                <div className='rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-white' style={{ height: 'calc(100% - 28px)' }}>
+                  <div style={{ transform: 'scale(0.28)', transformOrigin: 'top left', width: `${100/0.28}%`, pointerEvents: 'none', userSelect: 'none' }}>
+                    <ResumePreview
+                      data={dummyResumeData[0]}
+                      template={selectedTemplate}
+                      accentColor={TEMPLATE_OPTIONS.find(t => t.id === selectedTemplate)?.color || '#3B82F6'}
+                    />
+                  </div>
+                </div>
+              </div>
+
               <XIcon className='absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer transition-colors' onClick={()=> {setShowCreateResume(false); setTitle('')}}/>
             </div>
           </form>
