@@ -1,12 +1,14 @@
 import { FilePenLineIcon, LoaderCircleIcon, PencilIcon, PlusIcon, TrashIcon, UploadCloud, UploadCloudIcon, XIcon } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, lazy, Suspense } from 'react'
 import { dummyResumeData } from '../assets/assets'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import api from '../configs/api'
 import toast from 'react-hot-toast'
 import pdfToText from 'react-pdftotext'
-import ResumePreview from '../components/ResumePreview'
+
+// Lazy load ResumePreview to avoid circular dependency
+const ResumePreview = lazy(() => import('../components/ResumePreview'))
 
 const Dashboard = () => {
 
@@ -220,11 +222,13 @@ const Dashboard = () => {
                 <p className='text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 text-center'>Preview</p>
                 <div className='rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-white' style={{ height: 'calc(100% - 28px)' }}>
                   <div style={{ transform: 'scale(0.28)', transformOrigin: 'top left', width: `${100/0.28}%`, pointerEvents: 'none', userSelect: 'none' }}>
-                    <ResumePreview
-                      data={dummyResumeData[0]}
-                      template={selectedTemplate}
-                      accentColor={TEMPLATE_OPTIONS.find(t => t.id === selectedTemplate)?.color || '#3B82F6'}
-                    />
+                    <Suspense fallback={<div className='p-8 text-center text-gray-400 text-sm'>Loading preview...</div>}>
+                      <ResumePreview
+                        data={dummyResumeData[0]}
+                        template={selectedTemplate}
+                        accentColor={TEMPLATE_OPTIONS.find(t => t.id === selectedTemplate)?.color || '#3B82F6'}
+                      />
+                    </Suspense>
                   </div>
                 </div>
               </div>
