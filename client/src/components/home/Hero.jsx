@@ -1,7 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import TemplateCarousel from './TemplateCarousel'
 
 const Hero = () => {
 
@@ -122,8 +121,42 @@ const Hero = () => {
                 ))}
             </div>
 
-            {/* Template Carousel */}
-            <TemplateCarousel />
+            {/* Template Showcase */}
+            <div className="w-full mt-16 mb-4">
+              <p className="text-center text-xs text-slate-400 mb-6 font-semibold uppercase tracking-widest">20+ Professional Templates</p>
+              <div className="flex justify-center gap-3 flex-wrap max-w-3xl mx-auto">
+                {[
+                  { name: 'Classic', color: '#3B82F6' },
+                  { name: 'Modern', color: '#6366F1' },
+                  { name: 'Gradient', color: '#7C3AED' },
+                  { name: 'Executive', color: '#8B5CF6' },
+                  { name: 'Creative', color: '#EC4899' },
+                  { name: 'Tech', color: '#0EA5E9' },
+                  { name: 'Bold', color: '#DC2626' },
+                  { name: 'Nordic', color: '#475569' },
+                ].map(t => (
+                  <Link key={t.name} to={`/app?template=${t.name.toLowerCase()}`}
+                    className="w-20 h-28 rounded-lg border-2 overflow-hidden hover:scale-110 transition-transform shadow-sm hover:shadow-md"
+                    style={{ borderColor: t.color + '60' }}>
+                    <div className="h-2.5 w-full" style={{ backgroundColor: t.color }} />
+                    <div className="p-1.5 space-y-1">
+                      <div className="h-1.5 w-3/4 rounded bg-gray-200" />
+                      <div className="h-1 w-1/2 rounded" style={{ backgroundColor: t.color + '40' }} />
+                      <div className="h-1 w-full rounded bg-gray-100 mt-2" />
+                      <div className="h-1 w-5/6 rounded bg-gray-100" />
+                      <div className="h-1 w-4/6 rounded bg-gray-100" />
+                      <div className="flex gap-0.5 mt-1.5">
+                        {[1,2,3,4].map(i => <div key={i} className="w-2 h-2 rounded-sm" style={{ backgroundColor: t.color + '30' }} />)}
+                      </div>
+                    </div>
+                    <p className="text-center text-[8px] font-semibold mt-0.5" style={{ color: t.color }}>{t.name}</p>
+                  </Link>
+                ))}
+              </div>
+              <p className="text-center text-sm text-indigo-500 mt-4 font-medium">
+                <Link to="/app" className="hover:underline">View all 20 templates →</Link>
+              </p>
+            </div>
         </div>
     </div>
     <style>
