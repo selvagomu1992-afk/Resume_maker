@@ -1,5 +1,5 @@
 import { FilePenLineIcon, LoaderCircleIcon, PencilIcon, PlusIcon, TrashIcon, UploadCloud, UploadCloudIcon, XIcon } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import api from '../configs/api'
@@ -45,6 +45,21 @@ const Dashboard = () => {
   const [editResumeId, setEditResumeId] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [selectedTemplate, setSelectedTemplate] = useState(preselectedTemplate || 'classic')
+  const [PreviewComponent, setPreviewComponent] = useState(null)
+  const [previewData, setPreviewData] = useState(null)
+
+  // Dynamically load ResumePreview + dummy data when create modal opens
+  useEffect(() => {
+    if (showCreateResume && !PreviewComponent) {
+      Promise.all([
+        import('../components/ResumePreview'),
+        import('../assets/assets')
+      ]).then(([mod, assets]) => {
+        setPreviewComponent(() => mod.default)
+        setPreviewData(assets.dummyResumeData[0])
+      }).catch(() => {})
+    }
+  }, [showCreateResume])
 
   // If user came from carousel with ?template=xxx, auto-open create modal
   useEffect(() => {
@@ -210,36 +225,27 @@ const Dashboard = () => {
                 </button>
               </div>
 
-              {/* Right — Template Preview (static visual) */}
-              <div className='hidden md:flex w-64 bg-gray-100 border-l border-gray-200 p-4 flex-col items-center justify-center'>
-                <div className='w-full rounded-xl overflow-hidden border-2 shadow-lg bg-white' style={{ borderColor: TEMPLATE_OPTIONS.find(t => t.id === selectedTemplate)?.color || '#3B82F6' }}>
-                  {/* Static template mockup */}
-                  <div className='h-3 w-full' style={{ backgroundColor: TEMPLATE_OPTIONS.find(t => t.id === selectedTemplate)?.color || '#3B82F6' }} />
-                  <div className='p-4 space-y-3'>
-                    <div className='h-4 w-3/4 rounded bg-gray-200' />
-                    <div className='h-2 w-1/2 rounded' style={{ backgroundColor: (TEMPLATE_OPTIONS.find(t => t.id === selectedTemplate)?.color || '#3B82F6') + '40' }} />
-                    <div className='space-y-1.5 mt-4'>
-                      <div className='h-2 w-full rounded bg-gray-100' />
-                      <div className='h-2 w-5/6 rounded bg-gray-100' />
-                      <div className='h-2 w-4/6 rounded bg-gray-100' />
+              {/* Right — Full Template Preview */}
+              <div className='hidden md:block w-72 bg-gray-100 border-l border-gray-200 overflow-hidden relative'>
+                <p className='text-xs font-semibold text-gray-500 uppercase tracking-wide p-3 pb-0 text-center'>Preview</p>
+                <div className='p-2 h-[calc(100%-28px)] overflow-hidden rounded-xl m-2 border border-gray-200 bg-white'>
+                  {PreviewComponent && previewData ? (
+                    <div style={{ transform: 'scale(0.3)', transformOrigin: 'top left', width: `${100/0.3}%`, pointerEvents: 'none', userSelect: 'none' }}>
+                      <PreviewComponent
+                        data={previewData}
+                        template={selectedTemplate}
+                        accentColor={TEMPLATE_OPTIONS.find(t => t.id === selectedTemplate)?.color || '#3B82F6'}
+                      />
                     </div>
-                    <div className='flex gap-2 mt-4'>
-                      <div className='h-6 w-6 rounded' style={{ backgroundColor: (TEMPLATE_OPTIONS.find(t => t.id === selectedTemplate)?.color || '#3B82F6') + '30' }} />
-                      <div className='h-6 w-6 rounded' style={{ backgroundColor: (TEMPLATE_OPTIONS.find(t => t.id === selectedTemplate)?.color || '#3B82F6') + '30' }} />
-                      <div className='h-6 w-6 rounded' style={{ backgroundColor: (TEMPLATE_OPTIONS.find(t => t.id === selectedTemplate)?.color || '#3B82F6') + '30' }} />
-                      <div className='h-6 w-6 rounded' style={{ backgroundColor: (TEMPLATE_OPTIONS.find(t => t.id === selectedTemplate)?.color || '#3B82F6') + '30' }} />
-                      <div className='h-6 w-6 rounded' style={{ backgroundColor: (TEMPLATE_OPTIONS.find(t => t.id === selectedTemplate)?.color || '#3B82F6') + '30' }} />
+                  ) : (
+                    <div className='flex items-center justify-center h-full'>
+                      <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600' />
                     </div>
-                    <div className='space-y-1.5 mt-4'>
-                      <div className='h-2 w-full rounded bg-gray-100' />
-                      <div className='h-2 w-3/4 rounded bg-gray-100' />
-                    </div>
-                  </div>
+                  )}
                 </div>
-                <p className='text-sm font-bold mt-3 capitalize' style={{ color: TEMPLATE_OPTIONS.find(t => t.id === selectedTemplate)?.color || '#3B82F6' }}>
-                  {selectedTemplate?.replace('-', ' ')} Template
+                <p className='absolute bottom-3 left-0 right-0 text-center text-xs font-bold capitalize' style={{ color: TEMPLATE_OPTIONS.find(t => t.id === selectedTemplate)?.color || '#3B82F6' }}>
+                  {selectedTemplate?.replace('-', ' ')}
                 </p>
-                <p className='text-xs text-gray-400 mt-1'>Preview available in builder</p>
               </div>
 
               <XIcon className='absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer transition-colors' onClick={()=> {setShowCreateResume(false); setTitle('')}}/>
